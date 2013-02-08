@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+		<title>Matterhorn Video Player</title>
+		<script type="text/javascript" src="javascript/base.js"></script>
+		<script type="text/javascript" src="javascript/jquery.js"></script>
+		<script type="text/javascript" src="javascript/paella_player.js"></script>
+		<link rel="stylesheet" href="resources/style/controls.css" type="text/css" media="screen" charset="utf-8">
+		<link rel="stylesheet" href="resources/style/editor.css" type="text/css" media="screen" charset="utf-8">
+		<script type="text/javascript">
+			/*var MyInitCallback = Class.create(paella.InitCallback,{
+				translatePlayerMessages:function(language,messages) {
+					this.parent(language,messages);
+					
+					if (language && (language.toLowerCase()=='es-es' || language.toLowerCase()=='es')) {
+						messages.anonimousUserError = "No se ha podido mostrar el vídeo porque no estás identificado en el sistema.<br/>Entra <a href=\"http://www.google.com\">aquí</a> para iniciar sesión";
+					}
+				}
+			});*/
+		</script>
+	</head>
+	<body id="body" onload="initPaellaEngage('playerContainer'/*,new MyInitCallback()*/)">
+		<div id="playerContainer" style="display:block;width:100%">
+		</div>
+	</body>
+</html>

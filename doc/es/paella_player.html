@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>Paella Engage Player Doc - Basics</title>
+		<link rel="stylesheet" href="style.css" title="basic style" type="text/css" media="screen" charset="utf-8">
+	</head>
+	<body>
+<h1>Paella player</h1>
+
+<h2>Requisitos previos</h2>
+<p>Paella está implementado íntegramente utilizando Javascript. Se utiliza el framework jQuery, que es necesario conocer, además de otras bibliotecas de utilidades. También es recomendable tener conocimientos del funcionamiento de los estándares AJAX y JSONP, para comprender el sistema de comunicación con el servidor Matterhorn.</p>
+<p>Si se va a realizar algún tipo de comunicación con el servidor, es necesario tener conocimientos de JSON, así como del manejo de JSON desde Javascript.</p>
+<p>También es necesario tener conocimientos de CSS, si se desea modificar la interfaz del reproductor o alguno de sus plugins, o si se quiere implementar un plugin que tenga interfaz gráfica.</p>
+
+<h2 id="paellaStructure">Estructura de Paella Engage</h2>
+
+<p>Podemos dividir la estructura de Paella Engage en tres partes:</p>
+
+<h3 id="communication">Comunicación</h3>
+<p>El reproductor Paella Engage ha sido diseñado desde un principio para que sea muy sencillo de ampliar y modificar. Para ello se ha optado por una estructura débilmente acoplada, basada en comunicación mediante eventos: los diferentes elementos de Paella Engage se comunican entre ellos lanzando mensajes.</p>
+
+<p>Un elemento de Paella puede generar un evento, que a su vez puede ser recogido por cualquier otro elemento de Paella que lo entienda.</p>
+
+<p>Por ejemplo, el botón <strong>Reproducir</strong> envía el evento play, y el contenedor de vídeo lo recoge e inicia la reproducción del vídeo. De la misma forma, podemos tener un plugin de estadísticas que también recoja el evento play para llevar una cuenta de los instantes de tiempo en los que el usuario ha pulsado el botón de reproducción.</p>
+
+<p>Es posible acceder al reproductor mediante el objeto paella.player:</p>
+
+<div class="codeBlock"><code>
+paella.player.config: configuration file
+paella.player.controls: playback controls
+paella.player.mainContainer: DOM container main
+paella.player.videoContainer: video container
+</code></div>
+
+<p>A través del objeto paella.player.videoContainer se tiene acceso al estado actual del vídeo. Este objeto es una implementación de la clase <code>paella.VideoContainerBase</code></p>
+
+<h3 id="graphicInterface">Interfaz gráfica de usuario</h3>
+<p>Para mantener una estructura poco acoplada, se ha delegado casi toda la parte de interfaz gráfica a los ficheros de hojas de estilo. Por ese motivo, el reproductor incluye una serie de ficheros CSS para definir toda la parte de la interfaz gráfica que sea independiente del estado.</p>
+<p>Hay algunos aspectos que no pueden ser controlados a través del CSS, debido a que dependen de estado del vídeo: por ejemplo, a través de la interfaz es posible cambiar la posición y tamaño de los vídeos de profesor y diapositivas, en base a una configuración predeterminada. Este cambio se realiza mediante una transición animada que todavía no es posible hacer mediante CSS, de modo que esta transición, así como la configuración de los diferentes modos de visión, se realizan utilizando Javascript y ficheros de configuración JSON.</p>
+<p>El fichero de configuración de los distintos prefiles de vídeo se encuentra ubicado en el directorio <code>config/profiles/profiles.json</code></p>
+<div class="codeBlock"><code>
+{
+	"slide_professor":{
+		"name":{"es":"Presentación y presentador"},
+		"icon":"slide_professor_icon.png",
+		"masterVideo":{"content":"presenter","rect":[{"aspectRatio":"16/9","left":"712","top":"302","width":"560","height":"315"},{"aspectRatio":"4/3","left":"712","top":"198","width":"560","height":"420"},{"aspectRatio":"5/4","left":"712","top":"303","width":"560","height":"448"}],"visible":"true","layer":"1"},
+		"slaveVideo":{"content":"presentation","rect":[{"aspectRatio":"4/3","left":"5","top":"92","width":"700","height":"526"}],"visible":"true","layer":"1"},
+		"background":{"content":"slide_professor_paella.jpg","zIndex":5,"rect":{"left":"0","top":"0","width":"1280","height":"720"},"visible":"true","layer":"0"},
+		"logos":[{"content":"paella_logo.png","zIndex":5,"rect":{"top":"10","left":"10","width":"59","height":"42"}},{"content":"upv_logo.png","zIndex":5,"rect":{"top":"10","left":"84","width":"125","height":"42"}}]
+	},
+	"professor_slide":{
+		"name":{"es":"Presentador y presentación"},
+		"icon":"professor_slide_icon.png",
+		"masterVideo":{"content":"presenter","rect":[{"aspectRatio":"16/9","left":"5","top":"94","width":"932","height":"525"},{"aspectRatio":"4/3","left":"121","top":"94","width":"700","height":"525"}],"visible":"true","layer":"1"},
+		"slaveVideo":{"content":"presentation","rect":[{"aspectRatio":"4/3","left":"944","top":"370","width":"330","height":"247"}],"visible":"true","layer":"1"},
+		"background":{"content":"slide_professor_paella.jpg","zIndex":5,"rect":{"left":"0","top":"0","width":"1280","height":"720"},"visible":"true","layer":"0"},
+		"logos":[{"content":"paella_logo.png","zIndex":5,"rect":{"top":"10","left":"10","width":"59","height":"42"}},{"content":"upv_logo.png","zIndex":5,"rect":{"top":"10","left":"84","width":"125","height":"42"}}]
+		},
+	"professor":{
+		"name":{"es":"Solo profesor"},
+		"icon":"professor_icon.png",
+		"masterVideo":{"content":"presenter","rect":[{"aspectRatio":"16/9","left":"0","top":"0","width":"1280","height":"720"}, {"aspectRatio":"4/3","left":"160","top":"0","width":"960","height":"720"}],"visible":"true","layer":"1"},
+		"slaveVideo":{"content":"presentation","rect":[{"aspectRatio":"4/3","left":"0","top":"0","width":"300","height":"300"}],"visible":"false","layer":"1"},
+		"background":{"content":"default_background_paella.jpg","zIndex":5,"rect":{"left":"0","top":"0","width":"1280","height":"720"},"visible":"true","layer":"0"},
+		"logos":[{"content":"paella_logo.png","zIndex":5,"rect":{"top":"10","left":"10","width":"59","height":"42"}},{"content":"upv_logo.png","zIndex":5,"rect":{"top":"10","left":"84","width":"125","height":"42"}}]
+	},
+	"slide_over_professor":{
+		"name":{"es":"Presentación sobre profesor"},
+		"icon":"slide_over_professor_icon.png",
+		"masterVideo":{"content":"presenter","rect":[{"aspectRatio":"16/9","left":"0","top":"0","width":"1280","height":"720"}, {"aspectRatio":"4/3","left":"160","top":"0","width":"960","height":"720"}],"visible":"true","layer":"1"},
+		"slaveVideo":{"content":"presentation","rect":[{"aspectRatio":"4/3","left":"50","top":"400","width":"350","height":"262"}],"visible":"true","layer":"1"},
+		"background":{"content":"default_background_paella.jpg","zIndex":5,"rect":{"left":"0","top":"0","width":"1280","height":"720"},"visible":"true","layer":"0"},
+		"logos":[{"content":"paella_logo.png","zIndex":5,"rect":{"top":"10","left":"10","width":"59","height":"42"}},{"content":"upv_logo.png","zIndex":5,"rect":{"top":"10","left":"84","width":"125","height":"42"}}]
+	},
+	"slide_over_professor_right":{
+		"name":{"es":"Presentación a la derecha, sobre profesor"},
+		"icon":"slide_over_professor_right_icon.png",
+		"masterVideo":{"content":"presenter","rect":[{"aspectRatio":"16/9","left":"0","top":"0","width":"1280","height":"720"},{"aspectRatio":"4/3","left":"160","top":"0","width":"960","height":"720"}],"visible":"true","layer":"1"},
+		"slaveVideo":{"content":"presentation","rect":[{"aspectRatio":"4/3","left":"910","top":"400","width":"350","height":"262"}],"visible":"true","layer":"1"},
+		"background":{"content":"default_background_paella.jpg","zIndex":5,"rect":{"left":"0","top":"0","width":"1280","height":"720"},"visible":"true","layer":"0"},
+		"logos":[{"content":"paella_logo.png","zIndex":5,"rect":{"top":"10","left":"10","width":"59","height":"42"}},{"content":"upv_logo.png","zIndex":5,"rect":{"top":"10","left":"84","width":"125","height":"42"}}]
+	},
+	"slide":{
+		"name":{"es":"Solo presentación"},
+		"icon":"slide_icon.png",
+		"masterVideo":{"content":"presenter","rect":[{"aspectRatio":"16/9","left":"0","top":"0","width":"320","height":"190"}],"visible":"false","layer":"1"},
+		"slaveVideo":{"content":"presentation","rect":[{"aspectRatio":"4/3","left":"190","top":"5","width":"910","height":"683"}],"visible":"true","layer":"1"},
+		"background":{"content":"default_background_paella.jpg","zIndex":5,"rect":{"left":"0","top":"0","width":"1280","height":"720"},"visible":"true","layer":"0"},
+		"logos":[{"content":"paella_logo.png","zIndex":5,"rect":{"top":"10","left":"10","width":"59","height":"42"}},{"content":"upv_logo.png","zIndex":5,"rect":{"top":"10","left":"84","width":"125","height":"42"}}]
+	}
+}
+</code></div>
+
+<p>Todo el desarrollo que se realice en la parte de la interfaz gráfica, se debe hacer teniendo en cuenta esta regla: siempre que sea posible, se especificará la parte de la interfaz utilizando CSS.</p>
+
+<h3 id="codeStructure">Estructura del código</h3>
+<p>Paella Engage se ha implementado siguiendo un modelo de programación orientada a objetos. Para ello se ha utilizado una estructura de clases similar a la definida por el framework Prototype.js, para así disponer de herencia y polimorfismo.</p>
+<p>Para generar el árbol DOM, y para gestionar el funcionamiento interno del reproductor, se ha definido un grafo de objetos específico. Este grafo tiene cierta relación con el árbol DOM que se genera. De esta forma, disponemos de un nodo genérico de tipo <code>DomNode</code>, que genera un nodo DOM en la página web, y de este nodo heredan otros más específicos, como <code>Html5Video</code> o <code>PlayerContainer</code>.</p>
+<p>Este grafo se ha definido para simplificar la generación del árbol DOM, y para disponer de una capa de abstracción que facilite la interacción con los diferentes elementos del reproductor. Cada uno de estos nodos proporcionan una capa más de abstracción. Por ejemplo, un nodo de tipo <code>Html5Video</code> se encarga de gestionar un elemento &lt;video/&gt;, mientras que el nodo de tipo <code>PlayerContainer</code> se encarga de tareas como recoger los eventos play/pause/seek que se generan, y a su vez enviarlos a los nodos <code>Html5Video</code> y sincronizarlos entre sí.</p>
+<p>De la misma forma, hay elementos del árbol DOM que no tienen un nodo específico dentro del grafo de Paella Engage. Por ejemplo, el fondo del vídeo y los logos se implementan utilizando un nodo de tipo <code>DomNode</code> genérico.</p>
+<p>A la hora de implementar un plugin que requiera elementos DOM (por ejemplo, un botón en la barra de reproducción), se tendrá en cuenta esta regla: si un elemento DOM no tiene que realizar acciones complejas, utilizaremos un nodo DomNode genérico. Si el control tiene que realizar acciones más complicadas, será recomendable extender DomNode y añadir funciones específicas.</p>
+
+<img src="images/paella_structure.jpg" alt="paella structure"></img>
+
+<h2>Utilidades de Paella Engage</h2>
+<h3 id="debugLog">Log de depuración</h3>
+<p>Paella engage proporciona un objeto especial para generar los logs de depuración necesarios. Además de esto, controla los errores producidos por Internet Explorer 9 cuando se intenta acceder a la consola de depuración cuando no están abiertas las herramientas de depuración.</p>
+<p>El log de depuración se puede activar desde la consola de javascript, y también cuando se especifica el parámetro <code>&debug=true</code> en la barra de direcciones.</p>
+<div class="codeBlock"><code>	paella.debug.log("Log message");	// Muestra un mensaje en la consola, si el logging está activado
+	paella.debug.debug = true; 		// Activa el log, independientemente de lo que se establezca en la URL
+</code></div>
+
+<h3 id="ajaxAndJsonp">Ajax y JSONP:</h3>
+<p>Paella soporta la carga mediante tres métodos diferentes:</p>
+<ul>
+<li>Ajax: solo se puede utilizar para peticiones en el servidor local.</li>
+<li>Ajax usando un proxy: se utiliza un proxy implementado en PHP, al cual se envía la lista de parámetros y la URL del servidor remoto, y es el proxy PHP el que realiza la petición al servidor, y devuelve el resultado.</li>
+<li>JSONP: es el método utilizado por defecto por Matterhorn.</li>
+</ul>
+
+<p>Iniciar una petición:</p>
+<div class="codeBlock">
+<code>	new paella.Ajax (url, {param1: 'value1', param2: 'value2'}, function (result) {
+		//Server Response
+	} ProxyUrl, useJsonp, method);
+</code>
+</div>
+
+<p>Si se pasa una URL al parámetro proxyUrl, la petición se realizará a través de un proxy.</p>
+<p>Si se pasa useJsonp=true, la petición se realizará a través de jsonp.</p>
+
+<h3 id="urlParameters">Parámetros pasados por la URL</h3>
+<p>Para obtener un parámetro de la URL podemos utilizar:</p>
+<div class="codeBlock">
+<code>	paella.utils.parameters.get(parametername)</code>
+</div>
+
+<h3 id="timers">Temporizadores</h3>
+<p>Los temporizadores de Javascript son algo limitados, debido a que solamente permiten el paso de un string con la función que se desea ejecutar. Para solucionar este problema, Paella Engage proporciona una versión más completa de los temporizadores:</p>
+<p>Instalar un temporizador sencillo:</p>
+<div class="codeBlock">
+<code>	new paella.utils.Timer (function (timer) {
+		alert ('Hello, World!');
+	}, 1000);
+</code>
+</div>
+
+<p>Instalar un temporizador recurrente:</p>
+<div class="codeBlock">
+<code>	new paella.utils.Timer (function (timer) {
+		console.log ('Hello, World');
+	}, 1000)). REPEAT = true;
+</code>
+</div>
+
+<p>Acceder al temporizador desde dentro de la función a ejecutar:</p>
+<div class="codeBlock">
+<code>	var i = 0;
+	new paella.utils.Timer (function (timer) {
+		console.log ('Hello, World');
+		++i;
+		if (i == 4) timer.repeat = false;
+	}, 1000)). REPEAT = true;
+</code>
+</div>
+
+<p>Pasar parámetros al temporizador:</p>
+<div class="codeBlock">
+<code>	var i = 0;
+	new paella.utils.Timer (function (timer, params) {
+		console.log ('Hello, World');
+		++i;
+		if (i == params.repeat) timer.repeat = false;
+	}, 1000, {repeat: 4})). REPEAT = true;
+</code>
+</div>
+
+
+<h3 id="cookies">Cookies</h3>
+<p>Paella Engage incorpora utilidades para leer y escribir cookies del navegador de forma sencilla:</p>
+<p>Establecer una cookie:</p>
+<div class="codeBlock">
+<code>	paella.utils.cookies.set('myCookie','myCookieValue');</code>
+</div>
+<p>Leer una cookie:</p>
+<div class="codeBlock"><code>paella.utils.cookies.get('myCookie');</code></div>
+
+<h3 id="events">Eventos</h3>
+<p>Paella engage está diseñado para funcionar mediante eventos, de manera que:</p>
+<ul>
+<li>Si un componente sabe tratar un evento, su responsabilidad es capturarlo y tratarlo, con independencia de quien lo lance.</li>
+<li>Si un componente sabe enviar un evento, su responsabilidad es generarlo cuando sea necesario, sin importar quien lo reciba.</li>
+</ul>
+
+<p>Por ejemplo, el botón Play es un plugin de Paella Engage que no se comunica de forma directa con el contenedor de vídeos, sino que genera un evento para que lo traten de forma adecuada aquellos componentes que sepan tratarlo:</p>
+<img src="images/events.jpg" alt="events"></img>
+
+<p>Los eventos de Paella se generan y se tratan indistintamente utilizando el método proporcionado por Prototype o por jQuery. Los nombres de los eventos están definidos en el objeto paella.events:</p>
+
+<div class="codeBlock">
+<code>	paella.events = {
+		play:"mh:play",				// Inicio de reproducción
+		pause:"mh:pause",			// Pausar reproducción
+		next:"mh:next", 			// Siguiente capitulo (actualmente no se usa)
+		previous:"mh:previous", 		// Capítulo anterior (actualmente no se usa)
+		Seeking"mh:seeking", 			// Búsqueda de un instante, antes de soltar el botón del ratón
+		seeked:"mh:seeked", 			// Busqueda de un instante, tras soltar el botón del ratón
+		timeUpdate:"mh:timeupdate",		// Se lanza periódicamente al reproducir el vídeo
+		timeupdate:"mh:timeupdate", 		// El mismo evento que el anterior, se mantiene por compatibilidad (nótese la letra minúscula en “Update”)
+		seekTo:"mh:setseek", 			// Establecer una posición de la reproducción
+		endVideo:"mh:endvideo",			// Se envía cuando el vídeo termina
+		seekToTime:"mh:seektotime",		// Buscar el instante de tiempo correspondiente con uno de los frames de las diapositivas
+		setTrim:"mh:settrim", 			// igual que seekTo, se mantiene por compatibilidad
+		setPlaybackRate:"mh:setplaybackrate",	// Establecer la velocidad de reproducción, entre 0.5 y 2.0. Solo compatible con algunos navegadores
+		setVolume:"mh:setVolume", 		// Establecer el volumen del vídeo
+		loadStarted:"mh:loadStarted", 		// Se envía cuando el vídeo empieza a cargar
+		loadComplete:"mh:LoadComplete", 	// Se envía cuando el vídeo ha terminado de cargarse
+		error:"mh:error", 			// Se envía al producirse un error
+		setProfile"mh:setprofile" 		// Establece la composición de los vídeos maestro y esclavo (profesor/presentación, solo profesor, etc)
+	};
+</code>
+</div>
+
+<p>Por ejemplo, podemos iniciar la reproducción de un vídeo de la siguiente manera:</p>
+<div class="codeBlock">
+<code>	document.fire (paella.events.play);</code>
+</div>
+
+<p>Algunos de los eventos reciben parámetros que pueden ser de utilidad a la hora de tratarlos:</p>
+<table border="0" cellpadding="0" cellspacing="0">
+	<tr class="tableHeader">
+		<td>evento</td>
+		<td>parámetro</td>
+		<td>descripción</td>
+	</tr>
+	<tr>
+		<td>seekTo</td>
+		<td>newPositionPercent</td>
+		<td>Posición en la que hay que colocar el instante de reproducción. Se especifica el valor en porcentaje. Por ejemplo, 50 indicaría en mitad de la reproducción</td>
+	</tr>
+	<tr>
+		<td>timeUpdate</td>
+		<td>videoContainer</td>
+		<td>instancia del contenedor de vídeo</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>duration</td>
+		<td>duración total del vídeo</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>currentTime</td>	
+		<td>instante actual de tiempo de reproducción</td>
+	</tr>
+	<tr>
+		<td>setTrim</td>
+		<td>trimEnabled</td>
+		<td>true si el trimming del vídeo está activado, false en caso contrario</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>TrimStart</td>
+		<td>instante de tiempo en el que empieza el vídeo, según el trimming</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>TrimEnd</td>
+		<td>instante de tiempo en el que termina el vídeo, según el trimming</td>
+	</tr>
+	<tr>
+		<td>LoadComplete</td>
+		<td>masterVideo</td>
+		<td>instancia del contenedor de vídeo maestro</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>slaveVideo</td>
+		<td>instancia del contenedor de vídeo esclavo</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>frames</td>
+		<td>lista de fotogramas extraídos de la captura de pantalla de la presentación</td>
+	</tr>
+	<tr>
+		<td>error</td>
+		<td>error</td>
+		<td>Texto descriptivo del error que se ha producido</td>
+	</tr>
+	<tr>
+		<td>seeking</td>
+		<td>videoContainer</td>
+		<td>instancia del contenedor de vídeo principal</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>currentTime</td>
+		<td>Instante al que se está haciendo seek</td>
+	</tr>
+	<tr>
+		<td>seeked</td>
+		<td>videoContainer</td>
+		<td>instancia del contenedor de vídeo principal</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>currentTime</td>
+		<td>instante al que se ha hecho seek</td>
+	</tr>
+	<tr>
+		<td>endVideo</td>
+		<td>videoContainer</td>
+		<td>instancia del contenedor de vídeo principal</td>
+	</tr>
+	<tr>
+		<td>seekToTime</td>
+		<td>time</td>
+		<td>instante de tiempo al que hay que hacer seek</td>
+	</tr>
+	<tr>
+		<td>setVolume</td>
+		<td>master</td>
+		<td>volumen que se pide establecer en el vídeo maestro</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>slave</td>
+		<td>volumen que se pide establecer en el vídeo esclavo</td>
+	</tr>
+	<tr>
+		<td>setPlaybackRate</td>
+		<td>rate</td>
+		<td>ratio de velocidad, entre 0.5 y 2.0</td>
+	</tr>
+	<tr>
+		<td>setProfile</td>
+		<td>profileName</td>
+		<td>nombre del perfil que se quiere configurar</td>
+	</tr>
+	<tr>
+		<td>didSaveChanges</td>
+		<td>&nbsp;</td>
+		<td>Se llama cuando se han guardado cambios de algún tipo, por ejemplo, al ajustar el trimming desde el editor</td>
+	</tr>
+	<tr>
+		<td>controlBarWillHide</td>
+		<td>&nbsp;</td>
+		<td>Se llama justo antes de ocultar la barra de reproducción.</td>
+	</tr>
+	<tr>
+		<td>controlBarDidShow</td>
+		<td>&nbsp;</td>
+		<td>Se llama justo después de volver a mostrar la barra de reproducción, por ejemplo, cuando el usuario mueve el ratón o cuando termina la reproducción del vídeo.</td>
+	</tr>
+	<tr>
+		<td>beforeunload</td>
+		<td>&nbsp;</td>
+		<td>Se llama justo antes de cerrar la ventana del navegador.</td>
+	</tr>
+</table>
+
+
+<h3 id="messagesAndErrors">Mensajes emergentes</h3>
+<p>A través del objeto <code>paella.messageBox</code> es posible abrir un diálogo modal para mostrar información al usuario:<p>
+<h4>Muestra un iframe en una ventana emergente:</h4>
+<code class="codeHeader">paella.messageBox.showFrame(src, params)</code>
+<ul>
+	<li>src: la URL de la página web que se quiere mostrar en el iframe</li>
+	<li>params: objeto con parámetros opcionales
+		<ul>
+			<li>closeButton (bool): true si queremos que la ventana tenga un botón para cerrar, false en caso contrario.</li>
+			<li>width, height (string): tamaño del área útil de la ventana, en unidades CSS (hay que especificar las unidades).</li>
+			<li>onClose: función que se ejecuta cuando se cierra la ventana.</li>
+		</ul>
+	</li>
+</ul>
+
+<h4>Muestra un mensaje de texto en una ventana emergente:</h4>
+<code class="codeHeader">paella.messageBox.showMessage(message, params)</code>
+<ul>
+	<li>message (string): texto del mensaje. Puede contener código HTML.</li>
+	<li>params: objeto con parámetros opcionales (ver paella.messageBox.showFrame())</li>
+</ul>
+
+
+<h4>Muestra un mensaje de error en una ventana emergente.</h4>
+<code class="codeHeader">paella.messageBox.showError(message, params)</code>
+<p>Funciona igual que showMessage, pero cambia la clase CSS del diálogo, de forma que se pueda modificar el aspecto de la ventana para el caso de los errores.</p>
+
+<h3 id="accessVideoData">Acceso a la información de vídeo:</h3>
+<p>Paella Engage almacena toda la información que consulta sobre el vídeo en el siguiente objeto:</p>
+<div class="codeBlock">
+<code>	paella.matterhorn {
+		series: {
+			serie: información de la serie
+			acl: lista de control de acceso del el vídeo actual
+		}
+		episode: información del episodio
+		me: el fichero info/me.json del servidor Matterhorn
+		access: {
+			write: true | false
+			read: true | false
+			Contribute: true | false
+			isAnonymous: true | false
+		}
+	}
+</code>
+</div>
+
+<h2 id="paellaEngageGraphNodes">Nodos del grafo de Paella Engage</h2>
+<p>Los nodos de Paella Engage se pueden utilizar para implementar componentes o plugins que necesiten realizar alguna acción y mostrarse en la interfaz del reproductor.</p>
+<p>Si un componente no necesita realizar ninguna acción, es recomendable utilizar directamente el árbol DOM de HTML.</p>
+<p>Si no es necesario mostrar nada en la interfaz, seguramente no será necesario utilizar los nodos del árbol de Paella Engage: por ejemplo, añadiendo el código necesario directamente en un plugin.</p>
+<p>Paella Engage proporciona dos tipos de nodos genéricos que pueden ser útiles para implementar nuevos componentes con interfaz gráfica:</p>
+
+<h3>DomNode:</h3>
+<p>Contiene un nodo DOM genérico. Es este tipo de objeto el que hay que utilizar, por ejemplo, para crear un plugin que necesite interfaz de usuario (por ejemplo, un botón de reproducción). Este nodo se puede utilizar solo, o bien usarlo para crear otro nuevo nodo de Paella. El constructor recibe como parámetros el tipo de elemento DOM, el id de ese elemento y el estilo embebido.</p>
+<h3>Button:</h3>
+<p>Además de contener un nodo DOM, es capaz de manejar el clic del ratón de forma automática. El constructor recibe como parámetro el id que tendrá el nodo DOM del botón, su clase, la función a ejecutar al pulsarlo y si es de tipo toggle  o es un botón de tipo push normal.</p>
+<p>Ejemplo: extraído del plugin <code>PlayPauseButon</code>:</p>
+<div class="codeBlock"><code>	getRootNode:function(id) { this.parent(id);
+		...
+		// Create a node containing the play and pause buttons.
+		// First parameter: DOM node type (div)
+		// Second parameter: id of the DOM element
+		// Third parameter: embedded style (float: left ;)
+		var playPauseContainer = new DomNode('div',this.containerId,{'Float': 'left'});
+		
+		// Add the Play button to the container:
+		var thisClass = this;
+		var playButton = new Button (this.playId, 'playButton', function (event) {
+			thisClass.playButtonClick ();
+		}, false));
+		playPauseContainer.addNode(playButton);
+		pauseButton = new Button (this.pauseId, 'pauseButton', function (event) {
+			thisClass.pauseButtonClick ();
+		}, false);
+		playPauseContainer.addNode(pauseButton);
+		pauseButton.domElement.hide();
+		...
+	},
+</code>
+</div>
+
+<h2 id="extendingPaella">Modificar y extender Paella Engage</h2>
+<p>Muchas organizaciones disponen ya de recursos audiovisuales que no han sido generados mediante el proyecto Matterhorn. Para estos casos, Paella Engage proporciona una infraestructura interna que puede ser reutilizada para implementar reproductores de vídeo de cualquier tipo de forma que:</p>
+<ul>
+	<li>Todos los reproductores basados en Paella Engage compartan la misma interfaz gráfica de usuario</li>
+	<li>Los plugins desarrollados por la organización para Paella Engage pueden ser reutilizados en el resto de reproductores.</li>
+</ul>
+
+<p>Para implementar un reproductor de vídeo basado en Paella Engage, se proporcionan dos clases base que debemos extender:</p>
+<code class="codeHeader">polimedia.VideoContainerBase:</code>
+<p>implementa el contenedor de vídeo que debe:</p>
+<ul>
+	<li>Generar los eventos endVideo, timeUpdate y endVideo</li>
+	<li>Capturar y tratar los eventos play, pause, next, previous, seekTo, setPlaybackRate y setVolume (se proporciona una función para hacerlo automáticamente)</li>
+	<li>Implementar la funcionalidad del reproductor (iniciar reproducción, pausar, etc.)</li>
+</ul>
+
+<code class="codeHeader">polimedia.PlayerBase:</code>
+<p>Es la interfaz que se encarga de la inicialización del reproductor y que hace de mediador entre las distintas partes de Paella Engage. El objeto paella.player es una instancia de esta clase.</p>
+
+<h4>Caso de uso: el reproductor de video de Polimedia en la UPV:</h4>
+<p>El reproductor de vídeo de Polimedia ha sido implementado mediante un contenedor basado en Flow Player, y utilizando la infraestructura que proporciona Paella Engage para la barra de reproducción y los plugins:</p>
+<p>Clase VideoContainer:</p>
+<div class="codeBlock">
+<code>polimedia.VideoContainer = Class.create(paella.VideoContainerBase,{
+	video1Id:'',
+	videoContainer:null,
+	flowPlayerId:'flowplayer',
+	flowPlayerSWF: 'flowplayer/flowplayer.commercial-3.2.2.swf',
+	flowPlayerKey: '#$66da12337ec636b1f96',
+	flowPlayer:null,
+	updateTimer:null,
+	IsMobileVersion: false,
+	html5Video: null,
+
+	initialize:function(id,autoplay) {
+		var userAgent = new UserAgent();		
+		this.parent(id);
+		var thisClass = this;
+		this.initEvents();
+		if (userAgent.system.Android) {
+			autoplay = false;
+		}
+		if (autoplay) {
+			$(document).bind(polimedia.events.loadComplete,function(event) {
+				$(document).trigger(polimedia.events.play);
+			});
+		}
+	},
+	
+	initPlayer:function(onSuccess) {
+		var thisClass = this;
+		var ua = new UserAgent();
+		this.IsMobileVersion = ua.browser.IsMobileVersion
+		//this.IsMobileVersion = true
+		var videoId = paella.utils.parameters.get('id');		
+		var html5Url = polimedia.config.api.url + "html5/";
+		var forceHTML5 = paella.utils.parameters.get('forceHTML5');
+		
+		if (this.IsMobileVersion || forceHTML5){
+			// TODO: Comprobar cuando falla la peticion...
+			new paella.Ajax(html5Url,{id:videoId}, function(response) {
+				var jsonResponse = JSON.parse(response);
+				var fileToLoad  = "";
+				// TODO: comprobar si somos un iphone para enviar la version de iphone (mas pequeña)...
+				fileToLoad = jsonResponse.html5_720p;
+				if (fileToLoad == "") {
+					fileToLoad = jsonResponse.iphone;
+				}
+				thisClass.initHTML5Player(fileToLoad, onSuccess);
+			},"",false);
+		}				
+		else {
+			this.initFlowPlayer(onSuccess);
+		}		
+	},
+	
+	initHTML5Player:function(fileToLoad, onSuccess) {			
+		var thisClass = this;
+		var videoId = paella.utils.parameters.get('id');
+
+		if (fileToLoad == "") {
+			paella.messageBox.showError('El video no está disponible para tu dispositivo.');
+		}						
+		else{		
+			this.html5Video = new Html5Video("html5player",0,0,1280,720);
+			
+			$(this.html5Video.domElement).bind('timeupdate',function(event) {
+				$(document).trigger(paella.events.timeupdate, {videoContainer:thisClass, currentTime:thisClass.html5Video.domElement.currentTime });
+			});
+
+			$(this.html5Video.domElement).bind('seeking',function(event) {
+				$(document).trigger(paella.events.seeking, {videoContainer:thisClass, currentTime:thisClass.html5Video.domElement.currentTime });
+			});
+
+			$(this.html5Video.domElement).bind('seeked',function(event) {
+				$(document).trigger(paella.events.seeked, {videoContainer:thisClass, currentTime:thisClass.html5Video.domElement.currentTime });
+			});		
+			
+			this.html5Video.domElement.className = "class name html5";
+			this.videoContainer = this.addNode(this.html5Video);		
+			this.html5Video.addSource({"src":fileToLoad, "type": "video/mp4"});
+						
+			if (onSuccess) onSuccess();	
+		}
+	},
+	
+	initFlowPlayer:function(onSuccess) {
+		var thisClass = this;
+		var videoId = paella.utils.parameters.get('id');
+
+		jQuery.getScript('flowplayer/flash_detect_min.js', function(){
+			if(FlashDetect.versionAtLeast(10, 2)){
+				jQuery.getScript('flowplayer/flowplayer-3.2.0.min.js', function(){
+					var style = { width:'100%',height:'100%',display:'block'};		
+					this.videoContainer = thisClass.addNode(new DomNode('div',thisClass.flowPlayerId,style));					
+					thisClass.flowPlayer = $f(thisClass.flowPlayerId, {
+							src: thisClass.flowPlayerSWF, 
+							wmode: 'transparent'
+					}, {
+						key: thisClass.flowPlayerKey,
+						play: {
+							opacity: 0.0,
+							label: null,
+							replayLabel: null
+						},
+						clip: {
+							url: videoId,
+							baseUrl: '/',
+							provider: 'rtmp',
+							scaling: 'fit',
+							seekableOnBegin: true,
+							autoPlay: false,
+							autoBuffering: true,
+							start: 1,
+							onFinish: function(clip) {					
+								$(document).trigger(polimedia.events.endVideo);
+								if (thisClass.updateTimer) {
+									thisClass.updateTimer.repeat = false;						
+								}
+								thisClass.updateTimer = null;
+							}
+						},
+						canvas: { 
+							backgroundColor: '#FFFFFF'
+						},    
+						plugins: { 
+							controls: null,
+							polimedia: { 
+								url: 'flowplayer.polimedia-0.0.4-dev.swf',  
+								captionPlugin: 'captions',
+								contentPlugin: 'content'
+							}, 
+							rtmp: { 
+								url: 'flowplayer.rtmp-3.2.0.swf', 
+								netConnectionUrl: polimedia.config.server.rtmpUrl
+							},	
+							captions: { 
+								url: 'flowplayer.captions-3.2.0.swf',              
+								captionTarget: 'content',
+								button: null
+							}, 
+							content: { 
+								url:'flowplayer.content-3.2.0.swf', 
+								bottom: 25, 
+								height:60, 
+								opacity: '0.8',
+								display: 'none',
+								backgroundColor: '#bbbbbb', //'transparent', 
+								backgroundGradient: 'none', 
+								border: 0, 
+								//textDecoration: 'outline', 
+								style: {  
+									body: {  
+										fontSize: 21, 
+										fontFamily: 'Arial', 
+										textAlign: 'center', 
+										color: '#000000' 
+									}  
+								}  
+							}			
+						}
+					});
+					if (onSuccess) onSuccess();
+				});
+			}else{
+				paella.messageBox.showError('You need the latest &lt;a href=&quot;http://get.adobe.com/es/flashplayer/&quot;&gt;Flash&lt;/a&gt; version to watch the streaming video.');
+			}  		
+		});
+	},
+
+	play:function() {
+		var thisClass = this;
+		if (this.html5Video) {	
+			this.html5Video.play();
+		}
+		else if (this.flowPlayer) {
+			this.flowPlayer.play();
+			
+			if (this.updateTimer) {
+				this.updateTimer.repeat = false;
+			}
+			this.updateTimer = new paella.utils.Timer(function(timer) {
+				var params =  { videoContainer:thisClass,currentTime:thisClass.currentTime()};
+				$(document).trigger(polimedia.events.timeupdate,params);
+			},250);
+			this.updateTimer.repeat = true;
+			
+		}
+	},
+	
+	pause:function() {
+		if (this.html5Video) {			
+			this.html5Video.pause();
+		}
+		else if (this.flowPlayer) {
+			this.flowPlayer.pause();
+			if (this.updateTimer) {
+				this.updateTimer.repeat = false;
+			}
+			this.updateTimer = null;
+		}
+	},
+	
+	setCurrentTime:function(time) {
+		if (this.html5Video) {			
+			this.html5Video.setCurrentTime(time);
+		}
+		else if (this.flowPlayer) {
+			this.flowPlayer.seek(time);
+		}
+		var params = { videoContainer:this,currentTime:time};
+		$(document).trigger(polimedia.events.timeupdate,params);
+	},
+	
+	currentTime:function() {
+		if (this.html5Video) {			
+			return this.html5Video.currentTime()
+		}
+		else if (this.flowPlayer) {
+			return this.flowPlayer.getTime();
+		}
+		return 0;
+	},
+	
+	duration:function() {
+		if (this.html5Video) {			
+			return this.html5Video.duration()	
+		}
+		else if (this.flowPlayer) {
+			if (this.flowPlayer.getClip())
+				return this.flowPlayer.getClip().duration;
+		}
+		return 0
+	},
+	
+	paused:function() {
+		if (this.html5Video) {			
+			return this.html5Video.domElement.paused;
+		}
+		else if (this.flowPlayer) {
+			return (this.flowPlayer.getState() == 4);
+		}
+		return true;
+	},
+	
+	setupVideo:function(onSuccess) {
+		this.initPlayer(onSuccess);
+	},
+
+	onresize:function() { this.parent(onresize);
+	}
+});
+
+
+polimedia.Player = Class.create(paella.PlayerBase,{
+	playerId:'',
+	loader:null,
+	videoIdentifier:'',
+	settings:{},
+	
+	initialize:function(playerId,settings) {
+		this.parent(playerId);
+		if( settings ) this.settings = settings;
+		
+		// if initialization ok
+		if (this.playerId==playerId) {
+			this.loadPolimediaPlayer();
+			this.includePlugins('polimedia_plugins.js','plugins/',polimedia.pluginList,'plugins/plugins.css');
+
+			var thisClass = this; 
+		}
+	},
+	
+	loadPolimediaPlayer:function() {
+		this.loader = new polimedia.LoaderContainer('paellaPlayer_loader');
+		document.documentElement.appendChild(this.loader.domElement);
+		$(document).trigger(paella.events.loadStarted);
+
+		this.onLoadConfig(polimedia.config);
+	},
+	
+	onLoadConfig:function(configData) {
+		this.config = configData;
+		this.videoIdentifier = paella.utils.parameters.get('id');
+		var thisClass = this;
+
+		if (this.videoIdentifier) {
+			this.mainContainer = $('#' + this.playerId)[0];
+			if (this.mainContainer) {
+				this.controls = new ControlsContainer(this.playerId + '_controls');
+				this.mainContainer.appendChild(this.controls.domElement);
+			}
+			$(window).resize(function(event) { thisClass.onresize(); });
+			this.onLoad();
+		}
+	},
+	
+	onLoad:function() {
+		this.loadVideo();
+	},
+	
+	onresize:function() {
+		this.controls.onresize();
+	},
+	
+	getVideoUrl:function() {
+		return "";
+	},
+	
+	loadVideo:function() {
+		if (this.videoIdentifier) {
+			var videoUrl = this.getVideoUrl();
+			this.videoContainer = new polimedia.VideoContainer('polimedia_VideoContainer',this.settings.autoplay);
+			this.mainContainer.appendChild(this.videoContainer.domElement);			
+			var thisClass = this;
+
+			new paella.utils.Timer(function(timer) {
+				thisClass.videoContainer.setupVideo(function() {
+					var screenshotsUrl = thisClass.config.api.url + "screenshots/";
+					new paella.Ajax(screenshotsUrl,{id:thisClass.videoIdentifier},function(response) {
+						$(document).trigger(polimedia.events.loadPlugins,{pluginManager:paella.pluginManager});
+						thisClass.onresize();
+						var jsonResponse = JSON.parse(response);
+
+						$(document).trigger(polimedia.events.loadComplete,{masterVideo:null,slaveVideo:null,frames:jsonResponse});
+					},"",false);
+				});
+			},1000);
+		}
+	},
+
+	loadComplete:function(event) {
+		console.log(event);
+	}
+});
+...
+</code>
+</div>
+
+<h3>Función de inicialización</h3>
+<div class="codeBlock">
+<code>	initPolimediaPlayer function (playerid, initCallback) {
+		if (! initCallback | |! initCallback.translatePlayerMessages) {
+			polimedia.InitCallback initCallback = new ();
+		}
+		polimedia.initCallback = initCallback;
+		var lang = navigator.language | | window.navigator.userLanguage;
+		polimedia.initCallback.translatePlayerMessages (lang, paella.errors);
+		polimediaPlayer = new polimedia.Player (playerid);
+	}
+</code>
+</div>
+
+<h3>Index.html:</h3>
+<div class="codeBlock">
+<code>
+	&lt;body id=&quot;body&quot; onload=&quot;initPolimediaPlayer('playerContainer')&quot;&gt;
+		&lt;div id=&quot;playerContainer&quot; style=&quot;display:block;width:100%&quot;&gt;&lt;&#47;div&gt;
+	&lt;&#47;body&gt;
+</code>
+</div>
+
+<a href="index.html">volver</a>
+	</body>
+</html>

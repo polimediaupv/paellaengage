@@ -1,0 +1,21 @@
+#checkPublishPlugin_editor_info_container {
+	position:absolute;
+	left:0px;
+	right:0px;
+	bottom:246px;
+	height:40px;
+	z-index:10000;
+}
+
+#checkPublishPlugin_editor_message_container {
+	width:100%;
+	float:right;
+	text-align:right;
+	background-color:red;
+	color:white;
+	font-family:helvetica,arial,verdana,sans-sherif;
+	font-size: 28px;
+	line-height: 36px;
+	height: 100%;
+	overflow: hidden;
+}

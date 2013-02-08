@@ -1,0 +1,40 @@
+.showFramesButton {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	background-size: 300%;
+	background-image:url(../resources/images/frame_button.png);
+}
+
+.showFramesButton:hover {
+	background-position:-40px 0px;
+}
+
+.showFramesButton_active {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	right:0px;
+	background-size: 300%;
+	background-image:url(../resources/images/frame_button.png);
+	background-position:-80px 0px;
+}
+
+.frameListContainer {
+	background-image:url(../resources/images/playback_bkg.png);
+}
+
+.frameThumbnail {
+	margin-left:3px;
+	margin-right:3px;
+	margin-bottom:8px;
+	margin-top:8px;
+	height:40px;
+}
+
+.enabledFrameThumbnail {
+	border: 3px #80e04e solid;
+	height:50px;
+}

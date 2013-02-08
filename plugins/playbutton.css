@@ -1,0 +1,44 @@
+.playButton {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	background-size: 200%;
+	background-image:url(../resources/images/play_button.png);
+}
+
+.playButton:hover {
+	background-position:-40px 0px;
+}
+
+.pauseButton {
+	position:absolute;
+	float:left;
+	display:block;
+	width:40px;
+	height:37px;
+	background-size: 200%;
+	background-image:url(../resources/images/pause_button.png);
+	
+}
+
+.pauseButton:hover {
+	background-position:-40px 0px;
+}
+
+.playButtonOnScreen {
+	position: absolute;
+	opacity: 0.7;
+	top: 30%;
+	left: 40%;
+	bottom: 30%;
+	right: 40%;
+	z-index: 500;
+}
+
+.playButtonOnScreenIcon {
+	display: block;
+	cursor: pointer;
+	cursor: hand;
+	height:100%;
+}
