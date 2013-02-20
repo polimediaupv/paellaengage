@@ -320,6 +320,9 @@ paella.utils.UserRoleManager = Class.create({
 				var loadError = false;
 				if (data && data.acl) {
 					paella.matterhorn.series.acl = data.acl;
+					if (data.acl.ace.length == undefined){
+						data.acl.ace = [data.acl.ace];
+					}
 					for(var i=0;i<data.acl.ace.length;++i) {
 						var currentAcl = data.acl.ace[i];
 						for (var j=0;j<userRoles.length;++j) {
@@ -454,23 +457,25 @@ paella.utils.MatterhornData = Class.create({
 					sourceInfo.type = track.mimetype;
 					var destinationData;
 					
-					if  ((track.url!="") && (!(/^rtmp:\/\//i.test(track.url)))) {
-					    if (track.type=='presenter/delivery') {
-							destinationData = masterData; 
-					    }
-					    else if (track.type=='presentation/delivery') {
-							destinationData = slaveData;
-					    }
+					if ((track.type=='presenter/delivery') || (track.type=='presentation/delivery')){
+						if  ((track.url!="") && (!(/^rtmp:\/\//i.test(track.url)))) {
+						    if (track.type=='presenter/delivery') {
+								destinationData = masterData; 
+						    }
+						    else if (track.type=='presentation/delivery') {
+								destinationData = slaveData;
+						    }
 
-					    if (track.mimetype=='video/mp4') {
-							destinationData.sources.mp4 = sourceInfo;
-					    }
-					    else if (track.mimetype=='video/ogg') {
-							destinationData.sources.ogg = sourceInfo;
-					    }
-					    else if (track.mimetype=='video/webm') {
-							destinationData.sources.webm = sourceInfo;
-					    }
+						    if (track.mimetype=='video/mp4') {
+								destinationData.sources.mp4 = sourceInfo;
+						    }
+						    else if (track.mimetype=='video/ogg') {
+								destinationData.sources.ogg = sourceInfo;
+						    }
+						    else if (track.mimetype=='video/webm') {
+								destinationData.sources.webm = sourceInfo;
+						    }
+						}
 					}
 				}
 				

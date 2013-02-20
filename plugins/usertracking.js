@@ -29,7 +29,7 @@ paella.plugins.userTrackingViewerPlugIn = Class.create(paella.PlaybackPopUpPlugi
 		
 	getPopUpContent:function(id) {				
 		this.container = new DomNode('div',id + '_showuserviewstats_container',{display:'none', width:'100%'});
-		this.container.domElement.innerHTML = "Plugin: Working In Progress";
+		this.container.domElement.innerHTML = "Loading statistics...";
 		return this.container;
 	},
 
@@ -140,7 +140,7 @@ paella.plugins.userTrackingViewerPlugIn = Class.create(paella.PlaybackPopUpPlugi
 								
 				thisClass.drawFootprints();
 			}
-		},'',false,'get');		
+		}, paella.player.config.proxyLoader.url, paella.player.config.proxyLoader.usejsonp);		
 	},
 	
 });
@@ -171,7 +171,7 @@ paella.plugins.userTrackingCollectorPlugIn = Class.create(paella.EventDrivenPlug
 				//--------------------------------------------------
 				$(window).resize(function(event) { thisClass.onResize(); });
 			}
-		},'',false,'GET');
+		}, paella.player.config.proxyLoader.url, paella.player.config.proxyLoader.usejsonp);
 	},
 	
 	getEvents:function() {
@@ -267,7 +267,7 @@ paella.plugins.userTrackingCollectorPlugIn = Class.create(paella.EventDrivenPlug
 					in:this.inPosition,
 					out:this.outPosition
 				}, function(response) {
-			},'',false,'GET');			
+			}, paella.player.config.proxyLoader.url, paella.player.config.proxyLoader.usejsonp);			
 		}
 	}
 	

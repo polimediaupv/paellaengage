@@ -47,7 +47,7 @@ paella.plugins.SerieEpisodesPlugin = Class.create(paella.RightBarPlugin,{
 					thisClass.checkPublished(results.result[i]);
 				}
 			}
-		},"",false);
+		}, paella.player.config.proxyLoader.url, paella.player.config.proxyLoader.usejsonp);
 	},
 	
 	checkPublished:function(episode) {
@@ -57,9 +57,11 @@ paella.plugins.SerieEpisodesPlugin = Class.create(paella.RightBarPlugin,{
 			if (typeof(response)=="string") {
 				response = JSON.parse(response);
 			}
-			published = response.annotations.annotation.value;
+			published = true;
+			if (response && response.annotations)
+				published = response.annotations.annotation.value;
 			thisClass.appendEpisode(episode, published);			
-		});
+		}, paella.player.config.proxyLoader.url, paella.player.config.proxyLoader.usejsonp);
 	},	
 	
 	appendEpisode:function(episode, isPublished) {
@@ -172,7 +174,7 @@ paella.plugins.SerieEpisodesPlugin = Class.create(paella.RightBarPlugin,{
 		
 		// Left Node
 		var thumbLink = new DomNode('a', this.id+"_"+episode.id+"_left_a");
-		thumbLink.domElement.target= "_blank";
+		thumbLink.domElement.target= "_top";
 		thumbLink.domElement.href = "?id=" + episode.id;		
 
 		var thumbImg = new DomNode('img', this.id+"_"+episode.id+"_left_img");
@@ -186,7 +188,7 @@ paella.plugins.SerieEpisodesPlugin = Class.create(paella.RightBarPlugin,{
 		
 		var titleB = new DomNode('b', this.id+"_"+episode.id+"_right_title");
 		var titleLink = new DomNode('a', this.id+"_"+episode.id+"_left_a");
-		titleLink.domElement.target= "_blank";
+		titleLink.domElement.target= "_top";
 		titleLink.domElement.href = "?id=" + episode.id;		
 		
 		if (episode.isPublished === "undefined") {

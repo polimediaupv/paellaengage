@@ -1,7 +1,7 @@
 paella.plugins.DescriptionPlugin  = Class.create(paella.TabBarPlugin,{
 	id:null,
 	divRoot:null,
-	desc: { date:'-', contributor:'-', language:'-', views:'-', serie:'-', presenter:'-', description:'-', title:'-', subject:'-' },
+	desc: { date:'-', contributor:'-', language:'-', views:'-', serie:'-', serieId:'', presenter:'-', description:'-', title:'-', subject:'-' },
 	
 	getIndex:function() {
 		return 10;
@@ -22,13 +22,16 @@ paella.plugins.DescriptionPlugin  = Class.create(paella.TabBarPlugin,{
 	doDescription:function() {
 		var thisClass = this;
 				
-		if (paella.matterhorn.episode.dcTitle) { this.desc.title = paella.matterhorn.episode.dcTitle }
-		if (paella.matterhorn.episode.dcIsPartOf) { this.desc.serie = paella.matterhorn.episode.dcIsPartOf }
-		if (paella.matterhorn.episode.dcCreator) { this.desc.presenter = paella.matterhorn.episode.dcCreator }
-		if (paella.matterhorn.episode.dcContributor) { this.desc.contributor = paella.matterhorn.episode.dcContributor }
-		if (paella.matterhorn.episode.dcDescription) { this.desc.description = paella.matterhorn.episode.dcDescription }
-		if (paella.matterhorn.episode.dcLanguage) { this.desc.language = paella.matterhorn.episode.dcLanguage }
-		if (paella.matterhorn.episode.dcSubject) { this.desc.subject = paella.matterhorn.episode.dcSubject }		
+		if (paella.matterhorn.episode.dcTitle) { this.desc.title = paella.matterhorn.episode.dcTitle; }
+		if (paella.matterhorn.episode.dcIsPartOf) { 
+			this.desc.serieId = paella.matterhorn.episode.dcIsPartOf;
+			if (paella.matterhorn.series.serie.dcTitle) { this.desc.serie = paella.matterhorn.series.serie.dcTitle; }
+		}
+		if (paella.matterhorn.episode.dcCreator) { this.desc.presenter = paella.matterhorn.episode.dcCreator; }
+		if (paella.matterhorn.episode.dcContributor) { this.desc.contributor = paella.matterhorn.episode.dcContributor; }
+		if (paella.matterhorn.episode.dcDescription) { this.desc.description = paella.matterhorn.episode.dcDescription; }
+		if (paella.matterhorn.episode.dcLanguage) { this.desc.language = paella.matterhorn.episode.dcLanguage; }
+		if (paella.matterhorn.episode.dcSubject) { this.desc.subject = paella.matterhorn.episode.dcSubject; }		
 
 		this.desc.date = "n.a."
 		var dcCreated = paella.matterhorn.episode.dcCreated;
@@ -50,7 +53,7 @@ paella.plugins.DescriptionPlugin  = Class.create(paella.TabBarPlugin,{
 			}
 			thisClass.desc.views = response.stats.views;
 			thisClass.insertDescription();
-		},"",false);
+		}, paella.player.config.proxyLoader.url, paella.player.config.proxyLoader.usejsonp);
 	},
 	
 	insertDescription:function() {			
@@ -70,21 +73,21 @@ paella.plugins.DescriptionPlugin  = Class.create(paella.TabBarPlugin,{
 		divViews.domElement.innerHTML = 'Views: <span style="color:grey;">'+this.desc.views+'</span>';			
 		divTitle.domElement.innerHTML = 'Title: <span style="color:grey;">'+this.desc.title+'</span>';
 		divSubject.domElement.innerHTML = 'Subject: <span style="color:grey;">'+this.desc.subject+'</span>';
-		divSeries.domElement.innerHTML = 'Series: <a href="/engage/ui/index.html?series='+this.desc.serie+'">'+this.desc.serie+'</a>';
-		divPresenter.domElement.innerHTML = 'Presenter: <a href="/engage/ui/index.html?q='+this.desc.presenter+'">'+this.desc.presenter+'</a>';
+		divSeries.domElement.innerHTML = 'Series: <a href="' + paella.player.config.restServer.url + 'engage/ui/index.html?series='+this.desc.serieId+'">'+this.desc.serie+'</a>';
+		divPresenter.domElement.innerHTML = 'Presenter: <a href="' + paella.player.config.restServer.url + 'engage/ui/index.html?q='+this.desc.presenter+'">'+this.desc.presenter+'</a>';
 		divDescription.domElement.innerHTML = 'Description: <span style="color:grey;">'+this.desc.description+'</span>';
 
 		//---------------------------//			
-		var divLeft = new DomNode('div',this.id+"_Left" ,{float:'left', padding: '1em 1.4em'});			
+		var divLeft = new DomNode('div',this.id+"_Left" ,{display:'inline-block', width:'45%', padding: '1em 1.4em', verticalAlign: 'top'});			
 
 		divLeft.addNode(divTitle);
 		divLeft.addNode(divPresenter);
-		divLeft.addNode(divSeries);			
+		divLeft.addNode(divSeries);
 		divLeft.addNode(divDate);		
 		divLeft.addNode(divViews);
 		
 		//---------------------------//
-		var divRight = new DomNode('div',this.id ,{float:'right', marginRight: '300px', padding: '1em 1.4em'});		
+		var divRight = new DomNode('div',this.id ,{display:'inline-block', width:'45%', padding: '1em 1.4em', verticalAlign: 'top'});
 
 		divRight.addNode(divContributor);
 		divRight.addNode(divSubject);
@@ -849,7 +852,7 @@ paella.plugins.SerieEpisodesPlugin = Class.create(paella.RightBarPlugin,{
 					thisClass.checkPublished(results.result[i]);
 				}
 			}
-		},"",false);
+		}, paella.player.config.proxyLoader.url, paella.player.config.proxyLoader.usejsonp);
 	},
 	
 	checkPublished:function(episode) {
@@ -859,9 +862,11 @@ paella.plugins.SerieEpisodesPlugin = Class.create(paella.RightBarPlugin,{
 			if (typeof(response)=="string") {
 				response = JSON.parse(response);
 			}
-			published = response.annotations.annotation.value;
+			published = true;
+			if (response && response.annotations)
+				published = response.annotations.annotation.value;
 			thisClass.appendEpisode(episode, published);			
-		});
+		}, paella.player.config.proxyLoader.url, paella.player.config.proxyLoader.usejsonp);
 	},	
 	
 	appendEpisode:function(episode, isPublished) {
@@ -974,7 +979,7 @@ paella.plugins.SerieEpisodesPlugin = Class.create(paella.RightBarPlugin,{
 		
 		// Left Node
 		var thumbLink = new DomNode('a', this.id+"_"+episode.id+"_left_a");
-		thumbLink.domElement.target= "_blank";
+		thumbLink.domElement.target= "_top";
 		thumbLink.domElement.href = "?id=" + episode.id;		
 
 		var thumbImg = new DomNode('img', this.id+"_"+episode.id+"_left_img");
@@ -988,7 +993,7 @@ paella.plugins.SerieEpisodesPlugin = Class.create(paella.RightBarPlugin,{
 		
 		var titleB = new DomNode('b', this.id+"_"+episode.id+"_right_title");
 		var titleLink = new DomNode('a', this.id+"_"+episode.id+"_left_a");
-		titleLink.domElement.target= "_blank";
+		titleLink.domElement.target= "_top";
 		titleLink.domElement.href = "?id=" + episode.id;		
 		
 		if (episode.isPublished === "undefined") {
@@ -1209,7 +1214,7 @@ paella.plugins.userTrackingViewerPlugIn = Class.create(paella.PlaybackPopUpPlugi
 		
 	getPopUpContent:function(id) {				
 		this.container = new DomNode('div',id + '_showuserviewstats_container',{display:'none', width:'100%'});
-		this.container.domElement.innerHTML = "Plugin: Working In Progress";
+		this.container.domElement.innerHTML = "Loading statistics...";
 		return this.container;
 	},
 
@@ -1320,7 +1325,7 @@ paella.plugins.userTrackingViewerPlugIn = Class.create(paella.PlaybackPopUpPlugi
 								
 				thisClass.drawFootprints();
 			}
-		},'',false,'get');		
+		}, paella.player.config.proxyLoader.url, paella.player.config.proxyLoader.usejsonp);		
 	},
 	
 });
@@ -1351,7 +1356,7 @@ paella.plugins.userTrackingCollectorPlugIn = Class.create(paella.EventDrivenPlug
 				//--------------------------------------------------
 				$(window).resize(function(event) { thisClass.onResize(); });
 			}
-		},'',false,'GET');
+		}, paella.player.config.proxyLoader.url, paella.player.config.proxyLoader.usejsonp);
 	},
 	
 	getEvents:function() {
@@ -1447,7 +1452,7 @@ paella.plugins.userTrackingCollectorPlugIn = Class.create(paella.EventDrivenPlug
 					in:this.inPosition,
 					out:this.outPosition
 				}, function(response) {
-			},'',false,'GET');			
+			}, paella.player.config.proxyLoader.url, paella.player.config.proxyLoader.usejsonp);			
 		}
 	}
 	

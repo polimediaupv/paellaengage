@@ -83,7 +83,7 @@ paella.plugins.SearchPlugin  = Class.create(paella.TabBarPlugin,{
 			thisClass.divResults.domElement.innerHTML='Results for "'+value+'" (no actual results for "'+value+'" found)'			
 			
 			thisClass.setLoading(false);
-		});
+		}, paella.player.config.proxyLoader.url, paella.player.config.proxyLoader.usejsonp);
 	},
 	
 	setLoading:function(b) {
