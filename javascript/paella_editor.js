@@ -1058,7 +1058,7 @@ paella.utils.PaellaEditor = Class.create(DomNode,{
 	
 	translate:function() {
 		var lang = navigator.language || window.navigator.userLanguage;
-		paella.initCallback.translateEditorMessages(lang,paellaEditor.messages);
+		paella.initDelegate.translateEditorMessages(lang,paellaEditor.messages);
 	},
 
 	editorContainer:function() {

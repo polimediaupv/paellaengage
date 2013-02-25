@@ -105,21 +105,21 @@ paella.Ajax = Class.create({
 		var thisClass = this;
 		if (!method) method = 'get';
 		if (useJsonp) {
-            jQuery.ajax({url:url,type:method,dataType:'jsonp', jsonp:'jsonp', jsonpCallback:'callback', data:params}).always(function(data) {
-				paella.debug.log('using jsonp');
+            jQuery.ajax({url:url,type:method,dataType:'jsonp', jsonp:'jsonp', jsonpCallback:'callback', data:params,cache:false}).always(function(data) {
+				//paella.debug.log('using jsonp');
 				thisClass.callCallback(data);
 			});
 		}
 		else if (proxyUrl && proxyUrl!="") {
 			params.url = url;
-			jQuery.ajax({url:proxyUrl,type:method,data:params}).always(function(data) {
-				paella.debug.log('using AJAX');
+			jQuery.ajax({url:proxyUrl,type:method,data:params,cache:false}).always(function(data) {
+				//paella.debug.log('using AJAX');
 				thisClass.callCallback(data);
 			});
 		}
 		else {
-			jQuery.ajax({url:url,type:method,data:params}).always(function(data) {
-				paella.debug.log('using AJAX whithout proxy');
+			jQuery.ajax({url:url,type:method,data:params,cache:false}).always(function(data) {
+				//paella.debug.log('using AJAX whithout proxy');
 				thisClass.callCallback(data);
 			});
 		}
@@ -2421,27 +2421,19 @@ var PaellaPlayer = Class.create(paella.PlayerBase,{
 	},
 
 	loadPaellaPlayer:function() {
-		var configUrl = 'config/config.json';
 		var thisClass = this;
-		var params = {};
 		this.loader = new paella.LoaderContainer('paellaPlayer_loader');
-		document.documentElement.appendChild(this.loader.domElement);
+		$('body')[0].appendChild(this.loader.domElement);
 		$(document).trigger(paella.events.loadStarted);
 
-		new paella.Ajax(configUrl,params,function(data) {
-			if (typeof(data)=="string") {
-				data = JSON.parse(data);
-			}
-			thisClass.onLoadConfig(data);
+		paella.initDelegate.loadConfig(function(config) {
+			thisClass.onLoadConfig(config);
 		});
 	},
 
 	onLoadConfig:function(configData) {
-		if (typeof(configData)=="string") {
-			configData = JSON.parse(configData);
-		}
 		this.config = configData;
-		this.videoIdentifier = paella.utils.parameters.get('id');
+		this.videoIdentifier = paella.initDelegate.getId();
 
 		if (this.videoIdentifier) {
 			if (this.mainContainer) {
@@ -2692,7 +2684,32 @@ paella.plugins = {};
 
 paella.plugins.events = {};
 
-paella.InitCallback = Class.create({
+paella.InitDelegate = Class.create({
+	initParams:{
+		configUrl:'config/config.json',
+	},
+
+	initialize:function(params) {
+		if (params) {
+			if (params.configUrl) this.initParams.configUrl = params.configUrl;
+		}
+	},
+
+	getId:function() {
+		return paella.utils.parameters.get('id');
+	},
+	
+	loadConfig:function(onSuccess) {
+		var configUrl = this.initParams.configUrl;
+		var params = {};
+		new paella.Ajax(configUrl,params,function(data) {
+			if (typeof(data)=="string") {
+				data = JSON.parse(data);
+			}
+			onSuccess(data);
+		});
+	},
+
 	translatePlayerMessages:function(language,messages) {
 		if (language && (language.toLowerCase()=='es-es' || language.toLowerCase()=='es')) {
 			messages.videoCodecError = "Tu navegador no dispone de los codecs de vídeo necesarios.";
@@ -2719,16 +2736,15 @@ paella.InitCallback = Class.create({
 	}
 });
 
-paella.initCallback = null;
+paella.initDelegate = null;
 
 /* Initializer function */
-function initPaellaEngage(playerId,initCallback) {
-	if (!initCallback || !initCallback.translatePlayerMessages) {
-		initCallback = new paella.InitCallback();
+function initPaellaEngage(playerId,initDelegate) {
+	if (!initDelegate) {
+		initDelegate = new paella.InitDelegate();
 	}
-	paella.initCallback = initCallback;
+	paella.initDelegate = initDelegate;
 	var lang = navigator.language || window.navigator.userLanguage;
-	paella.initCallback.translatePlayerMessages(lang,paella.errors);
-	paellaPlayer = new PaellaPlayer(playerId);
+	paella.initDelegate.translatePlayerMessages(lang,paella.errors);
+	paellaPlayer = new PaellaPlayer(playerId,paella.initDelegate);
 }
-

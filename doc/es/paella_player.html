@@ -13,6 +13,30 @@
 <p>Si se va a realizar algún tipo de comunicación con el servidor, es necesario tener conocimientos de JSON, así como del manejo de JSON desde Javascript.</p>
 <p>También es necesario tener conocimientos de CSS, si se desea modificar la interfaz del reproductor o alguno de sus plugins, o si se quiere implementar un plugin que tenga interfaz gráfica.</p>
 
+
+<h3>SDK de desarrollo</h3>
+<p>En muchos casos es más fácil desarrollar plugins y código para Paella Engage sin tener un servidor Matterhorn real. Para estos casos, es posible instalar el <a href="http://polimedia.upv.es/pub/paella-dev-resources.zip">Paella Engage SDK</a>, que contiene una serie de recursos para hacerlo.</p>
+<p>Para utilizar este paquete, sigue las siguientes instrucciones:</p>
+<ul>
+	<li>Descarga el código fuente de Paella Engage y colócalo en algún sitio en tu servidor web.</li>
+	<li>Descomprime el fichero paella-dev-resources.zip. Obtendrás una carpeta con nombre nombre <strong>test</strong>.</li>
+	<li>Copia el directorio <strong>test</strong> en la raíz de Paella Engage.</li>
+	<li>Sustituye el fichero <strong>[paella_engage_root]/config/config.json</strong> con el config.json que hay dentro del directorio <strong>test</strong></li>	
+</ul>
+<p>Con este SDK podrás abrir Paella Engage utilizando un identificador de vídeo inventado. Se mostrarán los vídeos presenter y presentation incluidos en esta carpeta. Ambos vídeos están incluidos en formato MP4 y OGV.</p>
+<p><code>http://www.yourpaellaengageserver.com/index.html?id=fakeid</code></p>
+
+
+
+<h3>Recursos para desarrollo</h3>
+<p>Puedes instalar una versión standalone de Paella Engage para desarrollo descargando <a href="http://polimedia.upv.es/pub/paella-dev-resources.zip">este paquete de recursos</a>, que contiene una serie de ficheros estáticos para emular un servidor Matterhorn.</p>
+<p>Para utilizar el paquete de recursos solo tienes que seguir estas instrucciones:</p>
+<ul>
+	<li>Descomprime el fichero zip. Obtendrás una carpeta llamada <strong>test</strong></li>
+	<li>Copia la carpeta <strong>test</strong> en la raíz de Paella Engage</li>
+	<li>Sustituye el fichero <strong>[paella_engage_root]/config/config.json</strong> por el que viene dentro de la carpeta <strong>test</strong></li>
+</ul>
+
 <h2 id="paellaStructure">Estructura de Paella Engage</h2>
 
 <p>Podemos dividir la estructura de Paella Engage en tres partes:</p>
@@ -443,6 +467,113 @@ paella.player.videoContainer: video container
 	},
 </code>
 </div>
+
+<h2 id="customizePaella">Personalizar Paella Engage</h2>
+<p>La configuración por defecto de Paella Engage se obtiene a partir de una clase delegada mediante la cual es posible personalizar ciertos parámetros del reproductor. Este delgado se pasa a Paella Engage en la función de inicialización como segundo parámetro, y si no se pasa nada Paella crea el delegado por defecto.</p>
+<p>El delegado de inicialización debe utilizarse solamente para configuraciones que no puedan realizarse mediante plugins.</p>
+
+<h3 id="initDelegate">Delegado de inicialización</h3>
+<div class="codeBlock">
+<code>paella.InitDelegate = Class.create({
+	initParams:{
+		configUrl:'config/config.json',	// URL load the configuration file.
+	},
+
+	initialize:function(params) {
+		if (params) {
+			if (params.configUrl) this.initParams.configUrl = params.configUrl;
+		}
+	},
+
+	// It returns the current video ID. The default behaviour is to get this value from the URL
+	getId:function() {
+		return paella.utils.parameters.get('id');
+	},
+	
+	// Load configuration file.
+	loadConfig:function(onSuccess) {
+		var configUrl = this.initParams.configUrl;
+		var params = {};
+		new paella.Ajax(configUrl,params,function(data) {
+			if (typeof(data)=="string") {
+				data = JSON.parse(data);
+			}
+			onSuccess(data);
+		});
+	},
+
+	translatePlayerMessages:function(language,messages) {
+		// By default all messages are in English
+		if (/es/i.test(language)) {	// Spanish:
+			messages.videoCodecError = "Tu navegador no dispone de los codecs de vídeo necesarios.";
+			messages.browserCompatibilityError = "Tu navegador no es compatible con HTML 5. Puedes utilizar cualquiera de los siguientes navegadores:";
+			messages.videoNotPublished = "El profesor no ha publicado este vídeo";
+			messages.authorizationFailed = "No estás autorizado a ver este recurso";
+			messages.loadError = "No estás autorizado a ver este recurso";
+			messages.anonimousUserError = "No se ha podido mostrar el vídeo porque no estás identificado en el sistema";
+			messages.noSuchIdentifier = "El vídeo no existe";
+		}
+		// else if (...) {}
+	},
+	
+	translateEditorMessages:function(language,messages) {
+		// By default all messages are in English
+		if (/es/i.test(language)) {	// Spanish
+			messages.saveChanges = 'Guardar cambios';
+			messages.autopublishVideo = "Publicar el vídeo a los siete días";
+			messages.publishVideo = 'Publicar este vídeo';
+			messages.hideVideo = 'No publicar este vídeo';
+			messages.closeEditor = 'Cerrar editor';
+			messages.trimLeftTool = 'Herramienta de recortar por la izquierda';
+			messages.selectTool = 'Herramienta de selección';
+			messages.trimRightTool = 'Herramienta de recortar por la derecha';
+		}
+		// else if (...) {}
+	}
+});
+</code></div>
+
+<h3>Utilización</h3>
+<p>El delegado de inicialización se coloca incluyendo un script en la página HTML principal, bien sea un script embebido o bien desde un fichero externo.</p>
+<div class="codeBlock"><code><!DOCTYPE html>
+<html>
+	&lt;head&gt;
+		&lt;meta http-equiv="Content-type" content="text/html; charset=utf-8;"&gt;
+		&lt;meta http-equiv="X-UA-Compatible" value="IE=9"&gt;
+		&lt;title>Matterhorn Video Player&lt;&#47;title&gt;
+		&lt;script type="text/javascript" src="javascript/base.js">&lt;&#47;script&gt;
+		&lt;script type="text/javascript" src="javascript/jquery.js">&lt;&#47;script&gt;
+		&lt;script type="text/javascript" src="javascript/paella_player.js">&lt;&#47;script&gt;
+		&lt;link rel="stylesheet" href="resources/style/controls.css" type="text/css" media="screen" charset="utf-8"&gt;
+		&lt;link rel="stylesheet" href="resources/style/editor.css" type="text/css" media="screen" charset="utf-8"&gt;
+		&lt;script type="text/javascript"&gt;
+			var MyInitDelegate = Class.create(paella.InitDelegate,{
+				// Example: create a custom initialization delegate to return always the same video identifier
+				getId:function() {
+					return "customid";
+				}
+			});
+			
+			function loadPaella() {
+				// Example 1: use the default Paella initialization delegate object
+				var initDelegate = null;
+
+				// Example 2: configure the default Paella initialization delegate object
+				//var initDelegate = new paella.InitDelegate({configUrl:'config/custom_config.json'});
+				
+				// Example 3: use your own initialization delegate to do specific operations
+				//var initDelegate = new MyInitDelegate({configUrl:'config/custom_config.json'});
+
+				initPaellaEngage('playerContainer',initDelegate);
+			}
+		&lt;&#47;script&gt;
+	&lt;&#47;head&gt;
+	&lt;body id="body" onload="loadPaella();"&gt;
+		&lt;div id="playerContainer" style="display:block;width:100%"&gt;
+		&lt;&#47;div&gt;
+	&lt;&#47;body&gt;
+&lt;&#47;html&gt;
+</code></div>
 
 <h2 id="extendingPaella">Modificar y extender Paella Engage</h2>
 <p>Muchas organizaciones disponen ya de recursos audiovisuales que no han sido generados mediante el proyecto Matterhorn. Para estos casos, Paella Engage proporciona una infraestructura interna que puede ser reutilizada para implementar reproductores de vídeo de cualquier tipo de forma que:</p>
