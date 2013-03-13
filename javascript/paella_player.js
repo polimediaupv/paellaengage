@@ -59,7 +59,8 @@ paella.errors = {
 	videoNotPublished:"This video is not published",
 	authorizationFailed:"You are not authorized to view this resource",
 	loadError:"You are not authorized to view this resource",
-	anonimousUserError:"You are not logged in"
+	anonimousUserError:"You are not logged in",
+	continueAnyway:"Continue anyway"
 };
 
 paella.events = {
@@ -2340,12 +2341,14 @@ paella.PlayerBase = Class.create({
 		var userAgent = new UserAgent();
 		if (userAgent.browser.IsMobileVersion) return true;
 		if (userAgent.browser.Chrome || userAgent.browser.Safari || userAgent.browser.Firefox || userAgent.browser.Opera ||
-			(userAgent.browser.Explorer && userAgent.browser.Version.major>=9)) {
+				(userAgent.browser.Explorer && userAgent.browser.Version.major>=9)) {
 			return true;
 		}
 		else {
 			$(document).trigger(paella.events.error,{error:paella.errors.browserCompatibilityError});
-			paella.messageBox.showError(paella.errors.browserCompatibilityError + '<div style="display:block;width:700px;margin-left:auto;margin-right:auto;font-family:Verdana,sans-sherif;"><a href="http://www.google.es/chrome" style="color:#004488;float:left;margin-right:20px;"><img src="resources/images/chrome.png" alt="Google Chrome"></img><p>Google Chrome</p></a><a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home" style="color:#004488;float:left;margin-right:20px;"><img src="resources/images/explorer.png" alt="Internet Explorer 9"></img><p>Internet Explorer 9</p></a><a href="http://www.apple.com/safari/" style="float:left;margin-right:20px;color:#004488"><img src="resources/images/safari.png" alt="Safari"></img><p>Safari 5</p></a><a href="http://www.mozilla.org/firefox/" style="float:left;color:#004488"><img src="resources/images/firefox.png" alt="Safari"></img><p>Firefox 12</p></a></div>');
+			var message = paella.errors.browserCompatibilityError + '<div style="display:block;width:470px;height:140px;margin-left:auto;margin-right:auto;font-family:Verdana,sans-sherif;font-size:12px;"><a href="http://www.google.es/chrome" style="color:#004488;float:left;margin-right:20px;"><img src="resources/images/chrome.png" style="width:80px;height:80px" alt="Google Chrome"></img><p>Google Chrome</p></a><a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home" style="color:#004488;float:left;margin-right:20px;"><img src="resources/images/explorer.png" style="width:80px;height:80px" alt="Internet Explorer 9"></img><p>Internet Explorer 9</p></a><a href="http://www.apple.com/safari/" style="float:left;margin-right:20px;color:#004488"><img src="resources/images/safari.png" style="width:80px;height:80px" alt="Safari"></img><p>Safari 5</p></a><a href="http://www.mozilla.org/firefox/" style="float:left;color:#004488"><img src="resources/images/firefox.png" style="width:80px;height:80px" alt="Firefox"></img><p>Firefox 12</p></a></div>';
+			message += '<div style="margin-top:30px;"><a href="#" onclick="window.location = window.location + \'&ignoreBrowserCheck=true\'">' + paella.errors.continueAnyway + '</a></div>';
+			paella.messageBox.showError(message,{height:'40%'});
 		}
 		return false;
 	},
@@ -2719,6 +2722,7 @@ paella.InitDelegate = Class.create({
 			messages.loadError = "No estás autorizado a ver este recurso";
 			messages.anonimousUserError = "No se ha podido mostrar el vídeo porque no estás identificado en el sistema";
 			messages.noSuchIdentifier = "El vídeo no existe";
+			messages.continueAnyway = "Continuar de todos modos";
 		}	
 	},
 	
