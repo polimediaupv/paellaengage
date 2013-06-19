@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>Matterhorn Video Player</title>
+		<script type="text/javascript" src="javascript/base.js"></script>
+		<script type="text/javascript" src="javascript/jquery.js"></script>
+		<script type="text/javascript" src="javascript/paella_player.js"></script>
+		<script type="text/javascript" src="javascript/paella_matterhorn.js"></script>
+		<script type="text/javascript" src="javascript/paella_extended.js"></script>
+		<script type="text/javascript" src="javascript/paella_editor.js"></script>
+		<script type="text/javascript" src="resources/bootstrap/js/bootstrap.min.js"></script>
+		
+		<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.slate.min.css" type="text/css" media="screen" charset="utf-8">
+		<link rel="stylesheet" href="resources/style/controls.css" type="text/css" media="screen" charset="utf-8">
+		<link rel="stylesheet" href="resources/style/editor.css" type="text/css" media="screen" charset="utf-8">
+		<link rel="stylesheet" href="resources/style/extended.css" type="text/css" media="screen" charset="utf-8">
+		<link rel="stylesheet" href="resources/style/index.css" type="text/css" media="screen" charset="utf-8">				
+		<style type="text/css" media="screen">
+			html {
+				background-color: white;
+			}
+			
+			body {
+				margin: 0px;
+			}	
+		</style>
+		
+		<script type="text/javascript">
+		
+			function onHeaderSearch(){
+				var headerSearchInput = $('#paellaExtendedHeaderSearchInput')[0]
+				window.location.href="index.html?q="+headerSearchInput.value;
+			}
+					
+			var MyInitDelegate = Class.create(paella.InitDelegate,{
+				// Example: customize id
+				getId:function() {
+					return paella.utils.parameters.get('id');
+				},
+				
+				// Example: customize config settings
+				loadConfig:function(onSuccess) {
+					this.parent(function(data) {
+						//var server = paella.utils.parameters.get('server');
+						//if (server != "") {
+						//	data.restServer.url = server;
+						//}
+						onSuccess(data);
+					});
+				}
+			});
+			
+			function loadPaella() {
+				var initDelegate = null;
+				var initDelegate = new MyInitDelegate({accessControl:new paella.matterhorn.AccessControl(),videoLoader:new paella.matterhorn.VideoLoader()});
+				
+				initPaellaExtended({initDelegate:initDelegate});
+			}
+		</script>
+	</head>
+	<body id="body" onload="loadPaella()">
+		<div id="paellaExtendedHeader">
+			<div id="paellaExtendedHeaderLogoDiv">		
+				<a id="paellaExtendedHeaderLogo" title="" href="index.html">
+					<img src="config/profiles/resources/logo.png">
+				</a>
+			</div>	
+			<div id="paellaExtendedHeaderSearch">
+				<form onsubmit="onHeaderSearch(); return false;">
+					<div id="paellaExtendedHeaderSearchInputDiv">
+						<input id="paellaExtendedHeaderSearchInput" value="" type="text" tabindex="1" title="Buscar" dir="ltr" autocomplete="off" spellcheck="false" style="outline: none;"/>
+					</div>
+					<div id="paellaExtendedHeaderSearchButtonDiv" style="display:inline-block;">
+						<input type="submit" id="paellaExtendedHeaderSearchButton" value="Search"/>
+					</div>
+				</form>
+			</div>
+			<div id="paellaExtendedHeaderUser"></div>
+		</div>
+
+		<div id="paellaExtendedContainer"></div>
+	</body>
+</html>

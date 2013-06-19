@@ -1,0 +1,30 @@
+{
+	"proxyLoader":{
+		"enabled":false,
+		"url":"loadurl.php",
+		"usejsonp":false
+	},
+	"restServer":{
+		"url":"/"
+	},
+	"player":{
+		"defaultProfile": "small",
+		"methods":[{"name":"streaming","enabled":true},
+				{"name":"html","enabled":true},
+				{"name":"flash","enabled":true}]
+	},
+	"editor":{
+			"enabled":true
+	},
+	"defaultProfile":"slide_professor",
+	"trimming":{
+		"enabled":true
+	},
+	"publish":{
+		"enabled":true
+	},
+	"annotations":{
+		"enabled":false,
+		"url":"http://qnap1.cc.upv.es/_annotations.php"
+	}
+}

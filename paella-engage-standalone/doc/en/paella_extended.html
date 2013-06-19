@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html><head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<title>Paella Engage Player Doc - Paella Engage Extension</title><link rel="stylesheet" href="style.css" title="basic style" type="text/css" media="screen" charset="utf-8"></head>
+
+	<body>
+
+<h1>Paella Extended mode for Paella Player</h1>
+
+
+<h2>What is Paella Extended</h2>
+<p>Paella Extended it is a container that a groups Paella Player
+together with another two external containers capable of showing
+information related to the video that is been played by means of the
+use of Tabs and Sidebar Paella plugins.</p>
+<img src="images/extended.jpg" alt="paella extended">
+<p>In its default configuration, Paella Extended mode presents a
+down-video container in which there can be placed different tabs and a
+side bar where it is possible to show extra information about what is
+being played.</p>
+
+<ul>
+	<li>In the Tab container we will show the Tab type plugin. For more information, consult &nbsp;the <span style="font-style: italic;">Paella Plugins</span> guide.</li>
+	<li>Right
+bar:The side bar allows to add pluginsof type Sidebar plugin as a
+sequential list, from top to down, with the order specified by the
+function <span style="font-style: italic;">getIndex()</span> of each plugin.&nbsp;</li>
+</ul>
+
+<h2 id="presentationProfiles">Presentation profiles</h2>
+<p>Paella Extended allows to configure the layout of the elements of
+the interface by means of profiles. The presentation profiles are
+configured in the file resources/style/extended.css. By default two
+profiles are included:</p>
+<ul>
+	<li>Default: it shows the container of video and that of tabs to the left, one on other, and to the right the side bar.</li>
+	<li>Extended
+video: the video player occupies the entire width of the window, and
+for it it conceals the side bar. The tabs bar is placed under the video
+container, occupying also the entire width.</li>
+</ul>
+
+<p>It is also possible to modify&nbsp;these two profiles by&nbsp; modifying the&nbsp;resources/style/extended.css file. But usually it should be better to create new profiles adding them to the above mentioned file:</p>
+<div class="codeBlock"><code>	.PlayerContainer.mainProfile {<br>		float: left;<br>		position: relative;<br>		overflow: hidden;<br>		width: 68%;<br>		border: 1px solid # 6e6e6e;<br>	}<br><br>	.RightContainer.mainProfile {<br>		position: relative;<br>		width: 30%;<br>		float: right;<br>	}<br><br>	.BottomContainer.mainProfile {<br>		position: relative;<br>		float: left;<br>		width: 68%;<br>		min-height: 100px;<br>		border: 1px solid # 6e6e6e;<br>		margin-bottom: 20px;<br>	}<br><br>	.PlayerContainer.profile2 {<br>		float: left;<br>		position: relative;<br>		overflow: hidden;<br>		border: 1px solid # 6e6e6e;<br>		width: 100%;<br>	}<br><br>	.RightContainer.profile2 {<br>		display: none;<br>	}<br><br>	.BottomContainer.profile2 {<br>		position: relative;<br>		float: left;<br>		width: 100%;<br>		min-height: 500px;<br>		border: 1px solid # 6e6e6e;<br>		margin-bottom: 20px;<br>	}<br></code></div>
+	
+<p>To add a profile it is necessary to create three new CSS rules with
+the names of class.playerContainer.rightContainer and.bottomContainer,
+and to add the suffix of the corresponding class with the name of the
+profile:</p>
+<div class="codeBlock"><code>	.PlayerContainer.myProfile {<br>		...<br>	}<br>	<br>	.RightContainer.myProfile {<br>		...<br>	}<br>	<br>	.BottomContainer.myProfile {<br>		...<br>	}<br></code></div>
+
+<p>To change presentation profile it is possible to use thePaella Extended API</p>
+<div class="codeBlock"><code>	if (paella.extended) {<br>		paella.extended.setProfile ('MyProfile');<br>	}</code></div><h2 id="customizingPaellaExtended">Paella Extended customization</h2>
+<p>Paella Extended is easy to customize. Begginning with the
+index_extended.html file it is possible to design a web portal and add
+logotypes, headers and feet of page. It is necessary only to add a&nbsp;DIV
+container&nbsp;with an identifier and to pass it as a configuration
+parameter. In the following box it is possible to see in bold the code
+that has been added to index_extended.html&nbsp; to allow this
+customization,&nbsp;</p>
+<div class="codeBlock"><code>&lt;! DOCTYPE html&gt;<br>&lt;html&gt;<br>	&lt;head&gt;<br>		&lt;meta content="text/html;" http-equiv="Content-type" charset="utf-8"&gt;<br>		&lt;title&gt;Paella Engage Player - Extended&lt;/title&gt;<br>		&lt;script type="text/javascript" src="javascript/base.js"&gt; &lt;/script&gt;<br>		&lt;script type="text/javascript" src="javascript/jquery.js"&gt; &lt;/script&gt;<br>		&lt;script type="text/javascript" src="javascript/paella_player.js"&gt; &lt;/ script&gt;<br>		&lt;script type="text/javascript" src="javascript/paella_extended.js"&gt; &lt;/ script&gt;<br>		&lt;link rel="stylesheet" type="text/css" href="resources/style/controls.css" media="screen" charset="utf-8"&gt;<br>		&lt;link rel="stylesheet" type="text/css" href="resources/style/editor.css" media="screen" charset="utf-8"&gt;<br>		&lt;link rel="stylesheet" type="text/css" href="resources/style/extended.css" media="screen" charset="utf-8"&gt;<br>	&lt;/head&gt;<br>	&lt;body id="body" onload="initPaellaExtended(&nbsp;{containerId:'paellaExtended'}&nbsp;)"&gt;<br>		&lt;div id="paellaExtended"&gt; &lt;/div&gt;<br>	&lt;/body&gt;<br>&lt;/html&gt;<br></code></div>
+
+<h2 id="pluginsSomeConsiderations">Some consideration on plugins in Paella Extended</h2>The
+plugin system of Paella Engage in standard mode is capable of ignoring
+the plugins of Paella Extended if they try to be loaded in the simple
+version of the player. Nevertheless, in some cases we will have plugins
+that must be active or if they are run both in the Extended&nbsp;mode
+or in the simple one of Paella Engage, but they should work in
+different ways..<br><br>This is the case of the fullscreen plugin : in
+the simple version of Paella Engage it works like a button that puts
+the player in fullscreen (in the browsers that are compatible), while
+in the Extended mode it works like a selector by means of which we can
+choose between the different display profiles, or set fullscreeen mode.<br><br>This
+behavior is implementedby creating two independent plugins&nbsp;: the
+plugin fullscreenbutton.js is loaded in the simple version, while the
+plugin extended_profiles.js is loaded in the widespread version.<br><br>These plugin should support the checkEnabled() function of the plugin API.<br><h3>Fullscreen plugin verifying that Paella Extended is not available.</h3>
+<div class="codeBlock"><code>checkEnabled:function(onSuccess) {<br>	onSuccess(paella.extended==null);<br>},<br></code></div>
+
+<h3>Extended_profiles plugin checking for Paella Extended.</h3>
+<div class="codeBlock"><code>checkEnabled:function(onSuccess) {<br>	onSuccess(paella.extended!=null);<br>},<br></code></div>
+
+
+
+<a href="index.html">volver</a>
+
+
+	</body></html>

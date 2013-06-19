@@ -1,0 +1,97 @@
+.showSocialButton {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	background-size:300%;
+	background-image:url(../resources/images/social_button.png);
+}
+
+.showSocialButton:hover {
+	background-position:-40px 0px;
+}
+
+.showSocialButton_active {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	right:40px;
+	background-size:300%;
+	background-image:url(../resources/images/social_button.png);
+	background-position:-80px 0px;
+}
+
+#playerContainer_controls_playback_social_container {
+	position:absolute;
+	bottom:37px;
+	width:120px;
+	height:37px;
+	background-size: 200%;
+	background-image:url(../resources/images/playback_bkg.png);
+}
+
+.socialButtonFacebook {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	right:0px;
+	background-size:200%;
+	background-image:url(../resources/images/facebook_button.png);
+}
+
+.socialButtonFacebook:hover {
+	background-position: -40px 0px;
+}
+
+.socialButtonTwitter {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	right:40px;
+	background-size:200%;
+	background-image:url(../resources/images/twitter_button.png);
+}
+
+.socialButtonTwitter:hover {
+	background-position: -40px 0px;
+}
+
+.socialButtonEmbed {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	right:80px;
+	background-size:200%;
+	background-image:url(../resources/images/link_button.png);
+}
+
+.socialButtonEmbed:hover {
+	background-position: -40px 0px;
+}
+
+.embedSizeButton{
+	display:inline-block; 
+	background-color:#c8c8c8; 
+	border:1px solid rgb(49, 49, 53); 
+	border-radius:10px;
+	cursor:pointer;
+	margin-right: 5px;
+	vertical-align:middle;
+	font-size:14px;
+	text-align:center;
+	color:white;
+}
+
+#social_embed_width-input, #social_embed_height-input {
+	background-color: #ffffff;
+	width: 40px;
+    height: 20px;
+	color: #000000;
+	font-size:12px;
+	margin:0px;
+	padding:0px;
+}

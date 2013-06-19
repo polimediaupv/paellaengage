@@ -1,0 +1,52 @@
+
+.SerieEpisodesPlugin  {
+	width:100%;
+/*	min-width: 600px; */
+}
+
+
+.SerieEpisodesPlugin_Title{
+	font-family: sans-serif;
+	font-size: 1.5em;
+	color: #2D8F8B;
+	margin-bottom: 5px;
+}
+
+.SerieEpisodesPlugin_Title_Bold{
+	font-weight: bold;
+}
+
+
+.SerieEpisodesPlugin_Listing .recordings_header {
+	display: none;
+}
+
+.SerieEpisodesPlugin_Listing .recordings_entry_preview_container{
+	width: 120px;
+}
+.SerieEpisodesPlugin_Listing .recordings_entry_text_container {
+	font-size: 12px;
+}
+
+.SerieEpisodesPlugin_Listing .recordings_entry {
+	min-height: 95px;
+}
+
+
+.SerieEpisodesPlugin_Listing .recordings_entry.even_entry {
+	background-color: rgb(239, 247, 249);
+}
+
+.SerieEpisodesPlugin_Listing .recordings_entry.odd_entry {
+	background-color: rgb(247, 251, 252);
+}
+
+.SerieEpisodesPlugin_Listing .recordings_entry.pendent.even_entry, 
+.SerieEpisodesPlugin_Listing .recordings_entry.pendent.odd_entry {
+	background-color: rgb(255,204,102);
+}
+
+.SerieEpisodesPlugin_Listing .recordings_entry.unpublished.even_entry, 
+.SerieEpisodesPlugin_Listing .recordings_entry.unpublished.odd_entry {
+	background-color: gb(255,165,161);
+}

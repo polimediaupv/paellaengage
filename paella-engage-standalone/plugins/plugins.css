@@ -1,0 +1,697 @@
+.editorPluginToolStatusHelp {
+	position: absolute;
+	height: 113px;
+	left: 10px;
+	right: 10px;
+	bottom: 10px;
+	overflow: auto;
+}
+
+.editorPluginToolStatus_trackItemList {
+	position: absolute;
+	overflow: auto;
+	bottom: 123px;
+	top: 65px;
+	left: 10px;
+	right: 10px;
+	box-shadow: inset 0px 0px 10px 2px rgba(0, 0, 0, 0.39);
+	border-radius: 7px;
+	padding-left: 13px;
+}
+
+.trackEditorFieldSelected {
+	background-color: red;
+}
+
+.showSocialButton {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	background-size:300%;
+	background-image:url(../resources/images/social_button.png);
+}
+
+.showSocialButton:hover {
+	background-position:-40px 0px;
+}
+
+.showSocialButton_active {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	right:40px;
+	background-size:300%;
+	background-image:url(../resources/images/social_button.png);
+	background-position:-80px 0px;
+}
+
+#playerContainer_controls_playback_social_container {
+	position:absolute;
+	bottom:37px;
+	width:120px;
+	height:37px;
+	background-size: 200%;
+	background-image:url(../resources/images/playback_bkg.png);
+}
+
+.socialButtonFacebook {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	right:0px;
+	background-size:200%;
+	background-image:url(../resources/images/facebook_button.png);
+}
+
+.socialButtonFacebook:hover {
+	background-position: -40px 0px;
+}
+
+.socialButtonTwitter {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	right:40px;
+	background-size:200%;
+	background-image:url(../resources/images/twitter_button.png);
+}
+
+.socialButtonTwitter:hover {
+	background-position: -40px 0px;
+}
+
+.socialButtonEmbed {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	right:80px;
+	background-size:200%;
+	background-image:url(../resources/images/link_button.png);
+}
+
+.socialButtonEmbed:hover {
+	background-position: -40px 0px;
+}
+
+.embedSizeButton{
+	display:inline-block; 
+	background-color:#c8c8c8; 
+	border:1px solid rgb(49, 49, 53); 
+	border-radius:10px;
+	cursor:pointer;
+	margin-right: 5px;
+	vertical-align:middle;
+	font-size:14px;
+	text-align:center;
+	color:white;
+}
+
+#social_embed_width-input, #social_embed_height-input {
+	background-color: #ffffff;
+	width: 40px;
+    height: 20px;
+	color: #000000;
+	font-size:12px;
+	margin:0px;
+	padding:0px;
+}
+
+
+.showViewModeButton {
+	position:absolute;
+	width:40px;
+	height:37px;
+	background-image:url(../resources/images/view_icon.png);
+	background-repeat:no-repeat;
+	
+}
+
+.showViewModeButton:hover {
+	background-position:-40px 0px;
+}
+
+.showViewModeButton_active {
+	position:absolute;
+	right:80px;
+	width:40px;
+	height:37px;
+	background-image:url(../resources/images/view_icon.png);
+	background-repeat:no-repeat;
+	background-position:-80px 0px;
+}
+
+#playerContainer_controls_playback_viewmode_container {
+	position:absolute;
+	right:42px;
+	bottom:37px;
+}
+
+#CommentPlugin_Loading {
+    background-image: url("pluginloading.gif");
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-top: 10px;
+    width: 100%;
+    height: 11px;
+    display:block;
+}
+
+#CommentPlugin_Publish_entry_buttons_area {
+	margin-top: 5px;
+}
+
+.comments_entry {
+	margin: 5px;
+	margin-bottom: 15px;
+	width: 100%;
+}
+
+.comments_entry_username{
+	color: #438bc5;
+	font-size: 14px;
+	font-family: arial,sans-serif;
+	font-weight: bold;	
+}
+
+.comments_entry_datepublish{
+	color: #999;
+	font-size: 11px;
+	font-family: arial,sans-serif;
+	margin-left: 20px;
+}
+
+.comments_entry_comment{
+	margin-top: 5px;	
+	margin-bottom: 5px;	
+}
+
+.comments_entry_silhouette {
+	width:5%;
+}
+
+.comments_entry_container{
+	vertical-align: top;
+	margin-left: 7px;
+	width: 90%;
+}
+
+
+.comments_reply_container {
+	width: 90%;	
+}
+
+.comments_entry_container textarea {
+	width: 100%;
+	height: 42px;
+	margin: 0px;	
+}
+
+
+#paellaExtended_tabBar_commentsPlugin_reply_container {
+	vertical-align: top;
+	margin-left: 2px;
+	width: 540px;	
+}
+
+
+
+
+
+
+
+
+
+.showUserViewStatsButton {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	background-size:300%;
+	background-image:url(../resources/images/statistics_icon.png);
+}
+
+.showUserViewStatsButton:hover {
+	background-position:-40px 0px;
+}
+
+.showUserViewStatsButton_active {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	right:40px;
+	background-size:300%;
+	background-image:url(../resources/images/statistics_icon.png);
+	background-position:-80px 0px;
+}
+
+#playerContainer_controls_playback_showuserviewstats_container {
+	position:absolute;
+	bottom:37px;
+	width:100%;
+	height:25px;
+	background-size: 200%;
+	background-image:url(../resources/images/playback_bkg.png);
+}
+
+
+
+
+
+.SerieEpisodesPlugin  {
+	width:100%;
+/*	min-width: 600px; */
+}
+
+
+.SerieEpisodesPlugin_Title{
+	font-family: sans-serif;
+	font-size: 1.5em;
+	color: #2D8F8B;
+	margin-bottom: 5px;
+}
+
+.SerieEpisodesPlugin_Title_Bold{
+	font-weight: bold;
+}
+
+
+.SerieEpisodesPlugin_Listing .recordings_header {
+	display: none;
+}
+
+.SerieEpisodesPlugin_Listing .recordings_entry_preview_container{
+	width: 120px;
+}
+.SerieEpisodesPlugin_Listing .recordings_entry_text_container {
+	font-size: 12px;
+}
+
+.SerieEpisodesPlugin_Listing .recordings_entry {
+	min-height: 95px;
+}
+
+
+.SerieEpisodesPlugin_Listing .recordings_entry.even_entry {
+	background-color: rgb(239, 247, 249);
+}
+
+.SerieEpisodesPlugin_Listing .recordings_entry.odd_entry {
+	background-color: rgb(247, 251, 252);
+}
+
+.SerieEpisodesPlugin_Listing .recordings_entry.pendent.even_entry, 
+.SerieEpisodesPlugin_Listing .recordings_entry.pendent.odd_entry {
+	background-color: rgb(255,204,102);
+}
+
+.SerieEpisodesPlugin_Listing .recordings_entry.unpublished.even_entry, 
+.SerieEpisodesPlugin_Listing .recordings_entry.unpublished.odd_entry {
+	background-color: gb(255,165,161);
+}
+
+
+.fullScreenModeButton {
+	position:absolute;
+	top: 2px;
+	right:80px;
+	width:40px;
+	height:37px;
+	background-size: 200%;
+	background-image:url(../resources/images/fullscreen.png);
+	background-repeat:no-repeat;
+	
+}
+
+.fullscreenModeButton:hover {
+	background-image:url(../resources/images/fullscreen.png);
+	background-repeat:no-repeat;
+	background-position:-40px 0px;
+}
+
+
+.fullScreenModeButton_active {
+	position:absolute;
+        top: 2px;
+	right:80px;
+	width:40px;
+	height:37px;
+	background-size: 200%;
+	background-image:url(../resources/images/fullscreen.png);
+	background-repeat:no-repeat;
+	background-position:-40px 0px;
+}
+
+.fullscreenButton {
+	position:absolute;
+	width:40px;
+	height:37px;
+	background-size: 200%;
+	background-image:url(../resources/images/fullscreen_button.png);
+	background-repeat:no-repeat;
+}
+
+.fullscreenButton:hover {
+	background-position-x: -40px;
+}
+
+.repeatButton {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	background-size:200%;
+	background-image:url(../resources/images/repeat_button.png);
+}
+
+.repeatButton:hover {
+	background-position:-40px 0px;
+}
+
+.showFramesButton {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	background-size: 300%;
+	background-image:url(../resources/images/frame_button.png);
+}
+
+.showFramesButton:hover {
+	background-position:-40px 0px;
+}
+
+.showFramesButton_active {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	right:0px;
+	background-size: 300%;
+	background-image:url(../resources/images/frame_button.png);
+	background-position:-80px 0px;
+}
+
+.frameListContainer {
+	background-image:url(../resources/images/playback_bkg.png);
+}
+
+.frameThumbnail {
+	margin-left:3px;
+	margin-right:3px;
+	margin-bottom:8px;
+	margin-top:8px;
+	height:40px;
+}
+
+.frameThumbnail:hover {
+	margin: 0px;
+	border: 3px #e04e80 solid;
+	height: 50px;
+}
+
+.enabledFrameThumbnail {
+	border: 3px #80e04e solid;
+	height:50px;
+}
+
+.enabledFrameThumbnail:hover {
+	border: 3px #e04e80 solid;
+}
+
+
+
+.showExtendedProfiles {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	background-size:200%;
+	background-image:url(../resources/images/fullscreen_button.png);
+}
+
+.showExtendedProfiles:hover {
+	background-position:-40px 0px;
+}
+
+.showExtendedProfiles_active {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	right:40px;
+	background-image:url(../resources/images/fullscreen_button.png);
+	background-size:200%;
+	background-position:-80px 0px;
+}
+
+#playerContainer_controls_playback_extended_profiles_container {
+	position:absolute;
+	bottom:37px;
+	width:160px;
+	height:37px;
+	background-image:url(../resources/images/playback_bkg.png);
+}
+
+.extendedProfilesFullscreen {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	right:0px;
+	background-size:200%;
+	background-image:url(../resources/images/fullscreen_button.png);
+}
+
+.extendedProfilesFullscreen:hover {
+	background-position: -40px 0px;
+}
+
+.extendedProfilesFull {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	right:40px;
+	background-size: 200%;
+	background-image:url(extended_player_profile_full.png);
+}
+
+.extendedProfilesFull:hover {
+	background-position: -40px 0px;
+}
+
+.extendedProfilesBig {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	right:80px;
+	background-size: 200%;
+	background-image:url(extended_player_profile_big.png);
+}
+
+.extendedProfilesBig:hover {
+	background-position: -40px 0px;
+}
+
+.extendedProfilesSmall {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	right:120px;
+	background-size: 200%;
+	background-image:url(extended_player_profile_small.png);
+}
+
+.extendedProfilesSmall:hover {
+	background-position: -40px 0px;
+}
+
+
+
+
+.captionsButton_active {
+	position:absolute;
+	width:40px;
+	height:37px;
+	background-size: 300%;
+	background-image:url(../resources/images/caption_icon.png);
+	background-repeat:no-repeat;
+	background-position-x: -80px;
+}
+
+.captionsButton {
+	position:absolute;
+	width:40px;
+	height:37px;
+	background-size: 300%;
+	background-image:url(../resources/images/caption_icon.png);
+	background-repeat:no-repeat;
+}
+
+.captionsButton:hover {
+	background-position-x: -80px;
+}
+
+.captionsButton_noCaptions {
+	position:absolute;
+	width:40px;
+	height:37px;
+	background-size: 300%;
+	background-image:url(../resources/images/caption_icon.png);
+	background-repeat:no-repeat;
+	background-position-x: -40px;
+}
+
+.captionsButton_noCaptions_active {
+	position:absolute;
+	width:40px;
+	height:37px;
+	background-size: 300%;
+	background-image:url(../resources/images/caption_icon.png);
+	background-repeat:no-repeat;
+	background-position-x: -40px;
+}
+
+.CaptionsPlayerOverlayPlugin{
+	position:absolute;
+	left:0px;
+	right:0px;
+	bottom:40px;
+	text-align:center;
+	font-family:Helvetica, Arial, Verdana, sans-sherif;
+	font-size:20px;
+	text-shadow: -1px 0 black, 0 1px black,1px 0 black, 0 -1px black;
+	filter: progid:DXImageTransform.Microsoft.Shadow(color=black,direction=145,strength=2);
+	color:whiteSmoke;
+	z-index:90;	
+	width:90%;	
+	margin: auto;
+	z-index:10000;
+	display:none;
+}
+
+#paellaExtended_tabBar_segmentTextPlugin_searchbar {
+    height: 40px;
+    display:block;
+}
+
+#paellaExtended_tabBar_segmentTextPlugin_loading {
+    background-image: url("pluginloading.gif");
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-top: 10px;
+    width: 100%;
+    height: 11px;
+    display:block;
+}
+
+
+#paellaExtended_tabBar_segmentTextPlugin_search {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.segmentTextPlugin_searchBar_revelanceInfo{
+	text-align: center; 
+	margin-left: 1px; 
+	margin-right: 1px; 
+	border: 0px solid black
+}
+
+
+.segmentTextPlugin_segments_entry {
+    padding: 2px 5px 2px 5px;
+/*    height: 110px; */
+}
+
+.segmentTextPlugin_segments_entry:hover {
+    background-color: rgb(243, 222, 168);
+    cursor: pointer;
+}
+
+.segmentTextPlugin_segments_entry_preview_container{
+	width: 15%;
+	display: inline-block;
+}
+
+.segmentTextPlugin_segments_entry_text_container {
+    vertical-align: top;
+/*    height: 100%; */
+	width: 80%;
+    padding: 10px 0px 0px 5px;
+}
+
+.segmentTextPlugin_segments_entry_text{
+}
+
+.segmentTextPlugin_segments_entry_text_time {
+    color: rgb(9, 172, 194);
+}
+
+.none_relevance {
+    display: none;
+}
+
+.low_relevance {
+    background-color: rgb(192, 192, 192);
+}
+.medium_relevance {
+    background-color: rgb(173, 216, 230);
+}
+.high_relevance {
+    background-color: rgb(144, 238, 144);
+}
+
+
+.playButton {
+	position:absolute;
+	display:block;
+	width:40px;
+	height:37px;
+	background-size: 200%;
+	background-image:url(../resources/images/play_button.png);
+}
+
+.playButton:hover {
+	background-position:-40px 0px;
+}
+
+.pauseButton {
+	position:absolute;
+	float:left;
+	display:block;
+	width:40px;
+	height:37px;
+	background-size: 200%;
+	background-image:url(../resources/images/pause_button.png);
+	
+}
+
+.pauseButton:hover {
+	background-position:-40px 0px;
+}
+
+.playButtonOnScreen {
+	position: absolute;
+	opacity: 0.7;
+	top: 30%;
+	left: 45%;
+	bottom: 30%;
+	right: 40%;
+	z-index: 500;
+}
+
+.playButtonOnScreenIcon {
+	display: block;
+	cursor: pointer;
+	height:100%;
+}
+

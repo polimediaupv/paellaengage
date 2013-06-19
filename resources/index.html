@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
+	<head>
+		<title>player</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<style type="text/css" media="screen">
+		html, body { height:100%; background-color: #ffffff;}
+		body { margin:0; padding:0; overflow:hidden; }
+		#flashContent { width:100%; height:100%; }
+		</style>
+		<script type="text/javascript">
+			var swf = null;
+			
+			function addParameter(swf,name,value) {
+				var param = document.createElement('param');
+				param.setAttribute("name",name);
+				param.setAttribute("value",value);
+				swf.appendChild(param);
+			}
+
+			function createSwf(url,width,height,params) {
+				var object = document.createElement('object');
+				object.setAttribute("type","application/x-shockwave-flash");
+				object.setAttribute("data",url);
+				object.setAttribute("width","100%");
+				object.setAttribute("height","100%");
+				addParameter(object,"movie",url);
+				addParameter(object,"quality","high");
+				addParameter(object,"bgcolor","#efefef");
+				addParameter(object,"play","true");
+				addParameter(object,"loop","true");
+				addParameter(object,"wmode","window");
+				addParameter(object,"scale","default");
+				addParameter(object,"menu","true");
+				addParameter(object,"devicefont","false");
+				addParameter(object,"salign","");
+				//addParameter(object,"allowScriptAccess","sameDomain");
+				
+				var flashVars = "";
+				var separator = "";
+				for (var key in params) {
+					flashVars += separator + key + "=" + encodeURIComponent(params[key]);
+					separator = "&";
+				}
+				addParameter(object,"flashvars",flashVars);
+				
+				var link = document.createElement('a');
+				link.setAttribute("href", "http://www.adobe.com/go/getflash");
+				link.innerHTML = '<img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Obtener Adobe Flash Player" />';
+				object.appendChild(link);
+
+				return object;
+			}
+			
+			function init(container) {
+				var parameters = {};
+				
+				parameters.connect = "rtmp://mhopencast.ethz.ch/matterhorn-engage/";
+				parameters.url = "e577a43e-787a-4a40-8007-b47dd41dba68/4f5df996-a2da-47fe-8068-b13b49ba490c/track";
+				//parameters.connect = "rtmp://polimedia.upv.es/vod";
+				//parameters.url = "mp4:link/cursos/03020-Curso_Excel_2003-Jaime_Busquets/M09/B01/polimedia_muxed.mp4";
+				//parameters.connect = "rtmp://polimedia.upv.es/vod";
+				//parameters.url = "mp4:link/cursos/000-Spot/M01/B00/polimedia_muxed.mp4";
+				
+				swf = createSwf("player.swf",1280,720,parameters);
+				container.appendChild(swf);
+			}
+		</script>
+	</head>
+	<body onload="init(document.getElementById('flashContent'))">
+		<div id="flashContent">
+		</div>
+	</body>
+</html>
