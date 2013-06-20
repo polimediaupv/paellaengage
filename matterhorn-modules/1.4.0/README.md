@@ -31,16 +31,8 @@ INSTALLATION INSTRUCTIONS
 
     `$ grep -m 1 '<version>' $MH_HOME/pom.xml`
 
-2. Copy the bundle to your matterhorn installation.
-
-    `$ cp -r $MH_VERSION/paella-engage-ui $MH_HOME/modules`
-
-3. Go to 'paella-engage-ui' folder.
-
-    `$ cd $MH_HOME/modules/paella-engage-ui`
-
-4. Build the 'paella-engage-ui' bundle by running the following command:
+2. Build the 'paella-engage-ui' bundle by running the following command:
 
     `$ mvn clean install -DdeployTo=$MH_HOME`
 
-5. The Paella Player can be accessed at http://\<yourengageserverurl\>:\<yourport\>/paella/ui
+3. The Paella Player can be accessed at http://\<yourengageserverurl\>:\<yourport\>/paella/ui
