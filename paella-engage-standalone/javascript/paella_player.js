@@ -44,6 +44,7 @@ paella.pluginList = [
 	'repeatbutton.js',
 	'social.js',
 	'viewmode.js',
+	'google-analitycs.js',
 //	'check_publish.js',
 	'description.js',
 	'serie_episodes.js',

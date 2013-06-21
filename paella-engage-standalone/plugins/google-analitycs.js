@@ -7,7 +7,7 @@ paella.plugins.GoogleAnalitycs = Class.create(paella.EventDrivenPlugin,{
 	_gaq:null,
 
 	getEvents:function() {
-		return [paella.events.loadStarted,	
+		return [paella.events.loadComplete,	
 			paella.events.play,	
 			paella.events.pause,	
 			paella.events.endVideo,		
@@ -16,8 +16,8 @@ paella.plugins.GoogleAnalitycs = Class.create(paella.EventDrivenPlugin,{
 	
 	onEvent:function(eventType, params) {		
 		switch (eventType) {
-			case paella.events.loadStarted:
-				this.loadStarted();
+			case paella.events.loadComplete:
+				this.loadComplete();
 				break;
 			case paella.plugins.events.googleAnalytics.track:
 				this.trackEvent(params);
@@ -34,7 +34,7 @@ paella.plugins.GoogleAnalitycs = Class.create(paella.EventDrivenPlugin,{
 		}		
 	},
 	
-	loadStarted:function() {
+	loadComplete:function() {
 		var account = null;
 		try{
 			account = paella.player.config.googleAnalytics.account;
