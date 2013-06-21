@@ -6,9 +6,12 @@
 	<name>paella-engage-ui</name>
 	<version>2.0</version>
 	<properties>
+<!--
 		<matterhorn.version>1.4.0</matterhorn.version>
 		<matterhorn.basedir>${project.basedir}/../..</matterhorn.basedir>
+-->
 		<checkstyle.skip>false</checkstyle.skip>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
 		<!--
@@ -21,6 +24,26 @@
 	</dependencies>
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<configuration>
+							<executable>python</executable>
+							<workingDirectory>../../../paella-engage-standalone/</workingDirectory>
+							<arguments>
+								<argument>build.py</argument>
+							</arguments>    
+						</configuration>
+						<id>python-build</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
@@ -55,7 +78,10 @@
 				<configuration>
 					<instructions>
 						<Bundle-SymbolicName> ${project.artifactId} </Bundle-SymbolicName>
-						<Import-Package> org.opencastproject.rest;version=${matterhorn.version}</Import-Package>
+						<Import-Package> org.opencastproject.rest</Import-Package> 
+<!--
+						<Import-Package> org.opencastproject.rest;version=${matterhorn.version}</Import-Package> 
+-->
 						<Private-Package>ui.*</Private-Package>
 						<Http-Alias>/paella/ui</Http-Alias>
 						<Http-Classpath>/ui</Http-Classpath>

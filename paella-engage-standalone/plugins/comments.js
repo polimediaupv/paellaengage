@@ -5,7 +5,7 @@ paella.plugins.CommentsPlugin  = Class.create(paella.TabBarPlugin,{
 	divComments:null,
 	divLoading:null,
 	isPublishAllowed: true,
-	isPublishByAnonymousAllowed: true,
+	isPublishByAnonymousAllowed: false,
 	publishCommentTextArea:null,
 	publishCommentButtons:null,
 	canPublishAComment: false,
@@ -13,39 +13,20 @@ paella.plugins.CommentsPlugin  = Class.create(paella.TabBarPlugin,{
 	currentTime: 0,
 	proxyUrl:'',
 	useJsonp:false,
-        commentsTree: [],
+	commentsTree: [],
 	
 
-	getIndex:function() {
-		return 100;
-	},
-	
-	getTabName:function() {
-		return paella.dictionary.translate("Comments");
-	},
+	initialize:function() {
+		this.parent();
+		var thisClass = this;
 
-        initialize:function() {
-                this.parent();
-                var thisClass = this;
+		this.id = 'CommentPlugin';
+		this.divRoot = new DomNode('div',this.id ,{display:'block'});
 
 		this.divPublishComment = new DomNode('div','CommentPlugin_Publish' ,{display:'block'});
 		this.divLoading = new DomNode('div','CommentPlugin_Loading' ,{display:'none'});		
 		this.divComments = new DomNode('div','CommentPlugin_Comments' ,{display:'none'});
 
-                $(document).bind(paella.events.loadComplete,function(event,params) {
-                        thisClass.reloadComments();
-                });
-        },
-	
-	getRootNode:function(id) {
-		var thisClass = this;
-		this.useJsonp = paella.player.config.proxyLoader.usejsonp;
-		if (paella.player.config.proxyLoader && paella.player.config.proxyLoader.enabled) {
-			this.proxyUrl = paella.player.config.proxyLoader.url;
-		}		
-		this.id = 'CommentPlugin';
-		this.divRoot = new DomNode('div',this.id ,{display:'block'});
-	
 		this.divPublishComment.domElement.id = this.id+"_Publish";
 		this.divLoading.domElement.id = this.id+"_Loading";
 		this.divComments.domElement.id = this.id+"_Comments";
@@ -54,25 +35,64 @@ paella.plugins.CommentsPlugin  = Class.create(paella.TabBarPlugin,{
 		this.divRoot.addNode(this.divLoading);
 		this.divRoot.addNode(this.divComments);
 
-		if ( ((paella.matterhorn.me.username == "anonymous") && (this.isPublishByAnonymousAllowed == true)) || (paella.matterhorn.me.username != "anonymous") ){
-			if (this.isPublishAllowed == true){
-				this.canPublishAComment = true;
-				this.createPublishComment();
-				$(document).bind(paella.events.timeUpdate, function(event, params){
-					thisClass.currentTime = params.currentTime;
-                                        var currentTime = params.currentTime;
-                                        if (paella.player.videoContainer.trimEnabled()){
-                                          currentTime = params.currentTime - paella.player.videoContainer.trimming.start;
-                                        }
-					thisClass.btnAddCommentToInstant.domElement.innerHTML = paella.dictionary.translate("Publish at {0}").replace(/\{0\}/g, paella.utils.timeParse.secondsToTime(currentTime));
-					
-				});
+
+		$(document).bind(paella.events.loadComplete,function(event,params) {
+			thisClass.reloadComments();
+			
+			thisClass.isPublishByAnonymousAllowed = paella.player.config.comments.anonymousCanComment;
+	
+			if ( ((paella.matterhorn.me.username == "anonymous") && (thisClass.isPublishByAnonymousAllowed == true)) || (paella.matterhorn.me.username != "anonymous") ){
+				if (thisClass.isPublishAllowed == true){
+					thisClass.canPublishAComment = true;
+					thisClass.createPublishComment();
+					$(document).bind(paella.events.timeUpdate, function(event, params){
+						thisClass.currentTime = params.currentTime;
+						var currentTime = params.currentTime;
+						if (paella.player.videoContainer.trimEnabled()){
+						  currentTime = params.currentTime - paella.player.videoContainer.trimming.start;
+						}
+						thisClass.btnAddCommentToInstant.domElement.innerHTML = paella.dictionary.translate("Publish at {0}").replace(/\{0\}/g, paella.utils.timeParse.secondsToTime(currentTime));					
+					});
+				}
 			}
-		}
-		
+		});
+	},	
+	
+	getRootNode:function(id) {
+		var thisClass = this;
+		this.useJsonp = paella.player.config.proxyLoader.usejsonp;
+		if (paella.player.config.proxyLoader && paella.player.config.proxyLoader.enabled) {
+			this.proxyUrl = paella.player.config.proxyLoader.url;
+		}		
+	
 		return this.divRoot;
 	},
+
+	checkEnabled:function(onSuccess) {
+		var enabled = false;
+		try {
+			enabled = paella.player.config.comments.enabled;
+			if (enabled == true){
+				var mattEn = paella.matterhorn.me.org.properties["engageui.annotations.enable"];
+				if (mattEn != undefined) {
+					enabled = (paella.matterhorn.me.org.properties["engageui.annotations.enable"]=="true");
+				}
+			}
+		}
+		catch(e) {enabled = false;}
+
+		onSuccess(enabled);
+	},	
+		
+
+	getIndex:function() {
+		return 100;
+	},
 	
+	getTabName:function() {
+		return paella.dictionary.translate("Comments");
+	},
+		
 	setLoadingComments:function(b) {
 		if ((this.divLoading) && (this.divComments)){
 		if (b == true){
@@ -116,8 +136,7 @@ paella.plugins.CommentsPlugin  = Class.create(paella.TabBarPlugin,{
 
 		var btnAddComment = new DomNode('button',rootID+"_btnAddComment" ,{display:'float', float:'right'});
 		btnAddComment.domElement.onclick = function(){thisClass.addComment();};
-		
-                btnAddComment.domElement.innerHTML = paella.dictionary.translate("Publish");
+		btnAddComment.domElement.innerHTML = paella.dictionary.translate("Publish");
 
 		this.publishCommentButtons.addNode(btnAddComment);
 		
@@ -363,14 +382,11 @@ paella.plugins.CommentsPlugin  = Class.create(paella.TabBarPlugin,{
 			btnRplyComment.domElement.innerHTML = paella.dictionary.translate("Reply");
 			divCommentReply.addNode(btnRplyComment);
 		}
-
-                
-                
-                for (var i =0; i < comment["replies"].length; ++i ){
-                  var e = thisClass.createACommentReplyEntry(comment["id"], comment["replies"][i]);
-                  divCommentContainer.addNode(e);
-                }
-
+		
+		for (var i =0; i < comment["replies"].length; ++i ){
+			var e = thisClass.createACommentReplyEntry(comment["id"], comment["replies"][i]);
+			divCommentContainer.addNode(e);
+		}
 				
 		return divEntry;
 	},

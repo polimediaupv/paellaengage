@@ -660,6 +660,7 @@ paella.matterhorn.SearchEpisode = Class.create({
 						divPrev.className = "recordings_header_navigation_prev";
 						if (currentPage > 1) {
 							var divPrevLink = document.createElement('a');
+							divPrevLink.className = "recordings_header_navigation_link"
 							divPrevLink.param_offset = (currentPage - 2) * params.limit;	
 							divPrevLink.param_limit	= params.limit;
 							divPrevLink.param_q = params.q;
@@ -705,6 +706,7 @@ paella.matterhorn.SearchEpisode = Class.create({
 							else {
 								if (i !== currentPage) {
 									var divPageIdLink = document.createElement('a');
+									divPageIdLink.className = "recordings_header_navigation_link"
 									divPageIdLink.param_offset = (i -1) * params.limit;	
 									divPageIdLink.param_limit = params.limit;
 									divPageIdLink.param_q = params.q;
@@ -730,6 +732,7 @@ paella.matterhorn.SearchEpisode = Class.create({
 						divNext.className = "recordings_header_navigation_next";
 						if (currentPage < maxPage) {
 							var divNextLink = document.createElement('a');
+							divNextLink.className = "recordings_header_navigation_link"
 							divNextLink.param_offset = currentPage * params.limit;	
 							divNextLink.param_limit	= params.limit;
 							divNextLink.param_q = params.q;

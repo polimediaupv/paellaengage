@@ -11,7 +11,13 @@ paella.plugins.publish.classes.PublishLoaderPlugin = Class.create(paella.EventDr
 	},
 
 	checkEnabled:function(onSuccess) {
-		onSuccess(paella.player.config.publish && paella.player.config.publish.enabled);
+		var enabled = false;
+		try {
+			enabled = paella.player.config.publish.enabled;
+		}
+		catch(e) {enabled = false;}
+
+		onSuccess(enabled);	
 	},
 		
 	getEvents:function() {

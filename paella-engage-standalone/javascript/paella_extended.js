@@ -169,13 +169,18 @@ paella.Extended = Class.create({
 
 	setMainProfile:function() {
 		var profile = 'full';
-		if ((paella) && (paella.player) && (paella.player.config) && (paella.player.config.player) && (paella.player.config.player.defaultProfile)){
+		var cookieProfile = paella.utils.cookies.get("paella.extended.profile");
+		if (cookieProfile) {
+			profile = cookieProfile;
+		}
+		else if ((paella) && (paella.player) && (paella.player.config) && (paella.player.config.player) && (paella.player.config.player.defaultProfile)){
 			profile = paella.player.config.player.defaultProfile;
 		}
 		this.setProfile(profile);
 	},
 	
 	setProfile:function(profileName) {
+		paella.utils.cookies.set("paella.extended.profile", profileName);
 		var thisClass = this;
 		this.container.className = "paellaExtendedContainer " + profileName;
 		this.paellaContainer.className = "playerContainer " + profileName;

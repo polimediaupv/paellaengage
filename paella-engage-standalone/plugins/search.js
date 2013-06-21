@@ -12,38 +12,48 @@ paella.plugins.SearchPlugin  = Class.create(paella.TabBarPlugin,{
 	proxyUrl:'',
 	useJsonp:false,
 	
+	initialize:function() {
+		this.parent();
+	},
+	
+	getRootNode:function(id) {
+		this.id = id + 'segmentTextPlugin';
+		this.divRoot = new DomNode('div',this.id ,{display:'block'});
+		
+		var thisClass = this;
+		$(document).bind(paella.events.loadComplete,function(event,params) {
+			thisClass.divLoading = new DomNode('div',thisClass.id+"_loading" ,{display:'none'});		
+			thisClass.divSearch = new DomNode('div',thisClass.id+"_search" ,{display:'block'});
+			thisClass.divResults = new DomNode('div',thisClass.id+"_results" ,{display:'block'});
+		    thisClass.resultsEntryID =  thisClass.divResults.identifier+"_entry_";                
+		
+			thisClass.prepareSearchBar();			
+			thisClass.divRoot.addNode(thisClass.divSearchBar);
+			thisClass.divRoot.addNode(thisClass.divLoading);
+			thisClass.divRoot.addNode(thisClass.divSearch);
+			thisClass.divRoot.addNode(thisClass.divResults);
+		
+			thisClass.loadSegmentText();		
+		});
+	
+		if (paella.player.config.proxyLoader && paella.player.config.proxyLoader.enabled) {
+			this.proxyUrl = paella.player.config.proxyLoader.url;
+		}
+		this.useJsonp = paella.player.config.proxyLoader.usejsonp;
+	
+		return this.divRoot;
+	},
+	
+	checkEnabled:function(onSuccess) {
+		onSuccess(true);
+	},	
+		
 	getIndex:function() {
 		return 100;
 	},
 	
 	getTabName:function() {
 		return paella.dictionary.translate("Search");
-	},
-	
-	getRootNode:function(id) {
-		if (paella.player.config.proxyLoader && paella.player.config.proxyLoader.enabled) {
-			this.proxyUrl = paella.player.config.proxyLoader.url;
-		}
-		this.useJsonp = paella.player.config.proxyLoader.usejsonp;
-
-		this.id = id + 'segmentTextPlugin';
-		this.divRoot = new DomNode('div',this.id ,{display:'block'});
-
-		this.divLoading = new DomNode('div',this.id+"_loading" ,{display:'none'});		
-		this.divSearch = new DomNode('div',this.id+"_search" ,{display:'block'});
-
-		this.divResults = new DomNode('div',this.id+"_results" ,{display:'block'});
-        
-        this.resultsEntryID =  this.divResults.identifier+"_entry_";                
-		this.prepareSearchBar();
-		
-		this.divRoot.addNode(this.divSearchBar);
-		this.divRoot.addNode(this.divLoading);
-		this.divRoot.addNode(this.divSearch);
-		this.divRoot.addNode(this.divResults);
-		
-		this.loadSegmentText();		
-		return this.divRoot;
 	},
 	
 	prepareSearchBar:function(){
@@ -88,25 +98,25 @@ paella.plugins.SearchPlugin  = Class.create(paella.TabBarPlugin,{
 		this.divSearchBar.addNode(divSearchBarRight);
 	},
         
-        setNoActualResultAvailable:function(searchValue) {
-         	this.divSearch.domElement.innerHTML = paella.dictionary.translate("Results for '{0}; (no actual results for '{1}' found)").replace(/\{0\}/g,this.lastHit).replace(/\{1\}/g,searchValue);
-         	
-        },
-	
-        setResultAvailable:function(searchValue) {
-         	this.divSearch.domElement.innerHTML =  paella.dictionary.translate("Results for '{0}'").replace(/\{0\}/g,searchValue);
-        },
-        
-        setNotSearch:function() {
-         	this.divSearch.domElement.innerHTML="";
-        },
+    setNoActualResultAvailable:function(searchValue) {
+     	this.divSearch.domElement.innerHTML = paella.dictionary.translate("Results for '{0}; (no actual results for '{1}' found)").replace(/\{0\}/g,this.lastHit).replace(/\{1\}/g,searchValue);
+     	
+    },
+
+    setResultAvailable:function(searchValue) {
+     	this.divSearch.domElement.innerHTML =  paella.dictionary.translate("Results for '{0}'").replace(/\{0\}/g,searchValue);
+    },
+    
+    setNotSearch:function() {
+     	this.divSearch.domElement.innerHTML="";
+    },
 
 	doSearch:function(value) {
 		var thisClass = this;
 		this.divSearchBarRelevance.domElement.style.display="block";
 		this.setLoading(true);
 
-                var segmentsAvailable = false;
+		var segmentsAvailable = false;
 		
 		var restEndpoint = paella.player.config.restServer.url + "search/episode.json"; 		
 		new paella.Ajax(restEndpoint,{id:paella.matterhorn.episode.id, q:value}, function(response) {
@@ -119,73 +129,70 @@ paella.plugins.SearchPlugin  = Class.create(paella.TabBarPlugin,{
 
 			if (response){
 				paella.debug.log("Searching id="+paella.matterhorn.episode.id+ " q=" + value);
+				
+				segmentsAvailable = (response !== undefined) && (response['search-results'] !== undefined) &&
+					(response['search-results'].result !== undefined) && 
+					(response['search-results'].result.segments !== undefined) && 
+					(response['search-results'].result.segments.segment.length > 0);
+
+				if (value === '') {
+                	thisClass.setNotSearch()
+                } 
+                else { 
+                	thisClass.setResultAvailable(value);
+                }
+			}
+			if (segmentsAvailable) {
+				var segments = response['search-results'].result.segments;
 	
-	
-	                        segmentsAvailable = (response !== undefined) && (response['search-results'] !== undefined) &&
-	                            (response['search-results'].result !== undefined) && 
-	                            (response['search-results'].result.segments !== undefined) && 
-	                            (response['search-results'].result.segments.segment.length > 0);
-	
-	                       
-	                        if (value === '') {
-	                          thisClass.setNotSearch()
-	                        } 
-	                        else { 
-	                          thisClass.setResultAvailable(value);
-	                        }
-}
-				if (segmentsAvailable)
-				{
-					var segments = response['search-results'].result.segments;
-	
-	                                var maxRelevance = 0;
-					for (var i =0; i < segments.segment.length; ++i ){
-					    var segment = segments.segment[i];
-					    if (maxRelevance < parseInt(segment.relevance)) {
-	                                        maxRelevance = parseInt(segment.relevance);
-	                                    }
-					}
-	                                paella.debug.log("Max Revelance " + maxRelevance);
+	            var maxRelevance = 0;
+				for (var i =0; i < segments.segment.length; ++i ){
+					var segment = segments.segment[i];
+					if (maxRelevance < parseInt(segment.relevance)) {
+	                	maxRelevance = parseInt(segment.relevance);
+	                }
+				}
+	            paella.debug.log("Max Revelance " + maxRelevance);
 	                                
 	
-					for (var i =0; i < segments.segment.length; ++i ){
-						var segment = segments.segment[i];
-	                                        var relevance = parseInt(segment.relevance);
+				for (var i =0; i < segments.segment.length; ++i ){
+					var segment = segments.segment[i];
+	                var relevance = parseInt(segment.relevance);
 	
-	                                        var relevanceClass = ''
-	                                        if (value !== '') {
-	                                          if (relevance <= 0) {
-	                                            relevanceClass = 'none_relevance'
-	                                          } else if (relevance <  Math.round(maxRelevance * 30 / 100)) {
-	                                            relevanceClass = 'low_relevance'
-	                                          } else if (relevance < Math.round(maxRelevance * 70 / 100)) {
-	                                            relevanceClass = 'medium_relevance'
-	                                          } else {
-	                                            relevanceClass = 'high_relevance'
-	                                          }
-	                                        }
+	                var relevanceClass = ''
+	                if (value !== '') {
+	                	if (relevance <= 0) {
+	                    	relevanceClass = 'none_relevance'
+	                    } else if (relevance <  Math.round(maxRelevance * 30 / 100)) {
+	                    	relevanceClass = 'low_relevance'
+	                    } else if (relevance < Math.round(maxRelevance * 70 / 100)) {
+	                    	relevanceClass = 'medium_relevance'
+	                    } else {
+	                    	relevanceClass = 'high_relevance'
+	                    }
+	                }
 	                                        
-	                                        var divEntry = thisClass.divResults.getNode( thisClass.resultsEntryID+segment.index)
-			                        divEntry.domElement.className="segmentTextPlugin_segments_entry " + relevanceClass;
-	                                }
+	                var divEntry = thisClass.divResults.getNode( thisClass.resultsEntryID+segment.index);
+	                if (divEntry){
+			        	divEntry.domElement.className="segmentTextPlugin_segments_entry " + relevanceClass;
+	                }
+	            }
 	
-	                                if (!thisClass.foundAlready) {
-	                                  thisClass.foundAlready = true;
-	                                }
-	                                thisClass.lastHit = value;
-				} else {
-	                                paella.debug.log("No Revelance ");
-	
-	                                if (!thisClass.foundAlready)
-	                                { 
-	                                    //setNoSegmentDataAvailable();
-	                                }
-	                                else
-	                                {
-	                                    thisClass.setNoActualResultAvailable(value);
-	                                }
-				}	
-			thisClass.setLoading(false);
+	            if (!thisClass.foundAlready) {
+	            	thisClass.foundAlready = true;
+	            }
+	            thisClass.lastHit = value;
+			} 
+			else {
+	        	paella.debug.log("No Revelance ");
+	        	if (!thisClass.foundAlready) { 
+	        		//setNoSegmentDataAvailable();
+	            }
+	            else {
+	            	thisClass.setNoActualResultAvailable(value);
+	            }
+	        }	
+		    thisClass.setLoading(false);
 		}, thisClass.proxyUrl, thisClass.useJsonp);
 	},
 
@@ -210,9 +217,17 @@ paella.plugins.SearchPlugin  = Class.create(paella.TabBarPlugin,{
 				paella.debug.log("Segment Text data not available");
 			} else {
 				var segments = response['search-results'].result.segments;
+				paella.debug.log(" Trim----");
+				paella.debug.log(paella.player.videoContainer.trimStart());
+				paella.debug.log(paella.player.videoContainer.trimEnd());
 				for (var i =0; i < segments.segment.length; ++i ){
 					var segment = segments.segment[i];
-					thisClass.createSegmentTextEntry(segment);
+					var segmentTime = segment.time/1000;
+					paella.debug.log(segmentTime);
+					if ((paella.player.videoContainer.trimEnabled()) && (paella.player.videoContainer.trimStart() <= segmentTime) && (segmentTime <= paella.player.videoContainer.trimEnd())){
+						thisClass.createSegmentTextEntry(segment);
+						paella.debug.log("YES");
+					}
 				}
 				thisClass.setLoading(false);
 			}
@@ -226,9 +241,13 @@ paella.plugins.SearchPlugin  = Class.create(paella.TabBarPlugin,{
 		var thisClass = this;
 		var rootID = thisClass.resultsEntryID+segment.index;
 		
+		var segmentTimeTrim = (parseInt(segment.time)/1000);
+		if (paella.player.videoContainer.trimEnabled()){
+			segmentTimeTrim = segmentTimeTrim - paella.player.videoContainer.trimStart();
+		}
 				
 		var divEntry = new DomNode('div',rootID,{});
-		divEntry.domElement.onclick = function(){ $(document).trigger( paella.events.seekToTime, {time: segment.time/1000}) };
+		divEntry.domElement.onclick = function(){ $(document).trigger( paella.events.seekToTime, {time: parseInt(segment.time)/1000}) };
 		divEntry.domElement.className="segmentTextPlugin_segments_entry";
 
 		var divPreview = new DomNode('div',rootID+"_preview_container" ,{display:'inline-block'});
@@ -242,7 +261,7 @@ paella.plugins.SearchPlugin  = Class.create(paella.TabBarPlugin,{
 		var divResultText  = new DomNode('div',rootID+"_text_container" ,{display:'inline-block'});
 		divResultText.domElement.className = "segmentTextPlugin_segments_entry_text_container";
 		var textResultText = new DomNode('a',rootID+"_text" ,{});
-		textResultText.domElement.innerHTML = "<span class='segmentTextPlugin_segments_entry_text_time'>" + paella.utils.timeParse.secondsToTime(segment.time/1000) + "</span> " + segment.text;
+		textResultText.domElement.innerHTML = "<span class='segmentTextPlugin_segments_entry_text_time'>" + paella.utils.timeParse.secondsToTime(segmentTimeTrim) + "</span> " + segment.text;
 		textResultText.domElement.className = "segmentTextPlugin_segments_entry_text";
 		divResultText.addNode(textResultText);
 		divEntry.addNode(divResultText);

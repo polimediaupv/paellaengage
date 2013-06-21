@@ -8,7 +8,7 @@
 		"url":"/"
 	},
 	"player":{
-		"defaultProfile": "small",
+		"defaultProfile": "full",
 		"methods":[{"name":"streaming","enabled":true},
 				{"name":"html","enabled":true},
 				{"name":"flash","enabled":true}]
@@ -22,6 +22,13 @@
 	},
 	"publish":{
 		"enabled":true
+	},
+	"comments":{
+		"enabled":true,
+		"anonymousCanComment": true
+	},
+	"googleAnalytics":{
+		"account": null
 	},
 	"annotations":{
 		"enabled":false,

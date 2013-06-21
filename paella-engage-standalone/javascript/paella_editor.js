@@ -1420,7 +1420,7 @@ var EditControl = Class.create(DomNode,{
 	},
 
 	toggleEditor:function() {
-		if (paella.extended){
+		if ((paella.extended) || (window!=window.top)){
 			window.open("editor.html?id=" + paella.player.videoIdentifier);
 		}
 		else{

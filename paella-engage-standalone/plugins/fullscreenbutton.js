@@ -64,7 +64,10 @@ paella.plugins.FullscreenPlugin = Class.create(paella.PlaybackPopUpPlugin,{
 	},
 	
 	checkEnabled:function(onSuccess) {
-		onSuccess(paella.extended==null);
+		var enabled = (paella.extended==null);
+		if (window!=window.top) {enabled = false;}
+
+		onSuccess(enabled);
 	},
 	
 	getIndex:function() {

@@ -23,6 +23,13 @@
 	"publish":{
 		"enabled":true
 	},
+	"comments":{
+		"enabled":true,
+		"anonymousCanComment": true
+	},
+	"googleAnalytics":{
+		"account": null
+	},	
 	"annotations":{
 		"enabled":false,
 		"url":"http://qnap1.cc.upv.es/_annotations.php"
