@@ -3138,8 +3138,8 @@ var PaellaPlayer = Class.create(paella.PlayerBase,{
 	
 	loadComplete:function(event,params) {
 		var thisClass = this;
-		var time = paella.utils.parameters.get('t');
-		var master = params.masterVideo;
+		var time = paella.utils.parameters.get('time');
+		var master = paella.player.videoContainer.masterVideo();
 		var getProfile = paella.utils.parameters.get('profile');
 		var cookieProfile = paella.utils.cookies.get('lastProfile');
 		if (getProfile) {
@@ -3162,7 +3162,7 @@ var PaellaPlayer = Class.create(paella.PlayerBase,{
 				var duration = master.duration();
 				var trimStart = thisClass.videoContainer.trimStart();
 				var trimEnd = thisClass.videoContainer.trimEnd();
-				if (thisClass.videoContainer.trimEnabled()) {
+				if (thisClass.videoContainer.trimEnabled() && (trimEnd - trimStart)>0) {
 					duration = trimEnd - trimStart;
 				}
 				var hour = 0;
