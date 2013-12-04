@@ -760,7 +760,7 @@ var FlashVideo = Class.create(DomNode,{
 		else if (sourceData.type=='video/x-flv') {
 			var parameters = {};
 			
-			if (/(rtmp:\/\/)([\w\d\.\-_]+[:+\d]*)\/([\w\d\-_]+\/)([\w\d\.\/\-_]+)(\.flv)+/.test(sourceData.src)) {
+			if (/(rtmp:\/\/)([\w\d\.\-_]+[:+\d]*)\/([\w\d\-_]+\/)([\w\d\.\/\-_]+)(\.flv)?/.test(sourceData.src)) {
 				parameters.connect = RegExp.$1 + RegExp.$2 + '/' + RegExp.$3;
 				parameters.url = RegExp.$4;
 			}
