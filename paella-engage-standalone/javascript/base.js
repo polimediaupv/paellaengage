@@ -210,8 +210,8 @@ var UserAgent = Class.create({
 			this.browser.Vendor = "Mozilla Foundation";
 			this.browser.Version.versionString = RegExp.$1;
 		}
-		
-		this.browser.Explorer = /MSIE ([\d\.]+)/.test(userAgentString);
+
+		this.browser.Explorer = /MSIE ([\d\.]+)/.test(userAgentString) || /rv:([\d\.]+)/.test(userAgentString);	
 		if (this.browser.Explorer) {
 			this.browser.Name = "Internet Explorer";
 			this.browser.Vendor = "Microsoft";
